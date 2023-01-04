@@ -1,4 +1,3 @@
-from pprint import pprint
 from collections.abc import Collection
 
 stacks = {
@@ -26,10 +25,10 @@ def move_stack(stacks: dict[list[list[str]]], amount: int, index_from: int, inde
 def get_lines() -> Collection[str]:
     with open("input_day5.txt") as myfile:
         data = myfile.read()
-#     data = """move 1 from 2 to 1
-# move 3 from 1 to 3
-# move 2 from 2 to 1
-# move 1 from 1 to 2"""
+    #     data = """move 1 from 2 to 1
+    # move 3 from 1 to 3
+    # move 2 from 2 to 1
+    # move 1 from 1 to 2"""
     return data.split("\n")
 
 

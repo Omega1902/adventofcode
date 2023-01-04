@@ -1,6 +1,7 @@
-from typing import Callable
-from tqdm import trange, tqdm
 from functools import reduce
+from typing import Callable
+
+from tqdm import tqdm, trange
 
 data = """Monkey 0:
   Starting items: 63, 57

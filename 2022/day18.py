@@ -1,4 +1,4 @@
-def get_data()->str:
+def get_data() -> str:
     with open("input_day18.txt") as myfile:
         return myfile.read()
 
@@ -59,15 +59,11 @@ def is_air(cube, cubes, dims, air_bubble=None):
         air_bubble.add(cube)
     if not is_in_dim(cube, dims):
         return False
-    neighbours = tuple(
-        n for n in get_neighbours(cube) if not is_lava(n, cubes) and n not in air_bubble
-    )
+    neighbours = tuple(n for n in get_neighbours(cube) if not is_lava(n, cubes) and n not in air_bubble)
     air_bubble.update(neighbours)
     try:
-        result = all(
-            is_air(neighbour, cubes, dims, air_bubble) for neighbour in neighbours
-        )
-    except:
+        result = all(is_air(neighbour, cubes, dims, air_bubble) for neighbour in neighbours)
+    except Exception:
         print(cube)
     if result and is_root:
         air.update(air_bubble)
@@ -93,9 +89,7 @@ def get_neighbours(cube):
 
 def parts(cubes, strategy, dims):
     exposed_surfaces = (
-        1 if strategy(neighbour, cubes, dims) else 0
-        for cube in cubes
-        for neighbour in get_neighbours(cube)
+        1 if strategy(neighbour, cubes, dims) else 0 for cube in cubes for neighbour in get_neighbours(cube)
     )
     print(sum(exposed_surfaces))
 

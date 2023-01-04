@@ -1,6 +1,5 @@
-from typing import Iterable
 from functools import cmp_to_key, reduce
-from pprint import pprint
+from typing import Iterable
 
 test_data = """[1,1,3,1,1]
 [1,1,5,1,1]

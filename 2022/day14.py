@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Collection
+from collections.abc import Collection, Iterable
 from functools import reduce
 from itertools import tee
 

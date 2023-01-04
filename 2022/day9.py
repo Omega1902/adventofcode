@@ -64,11 +64,9 @@ def day9_part2():
         for _ in range(int(amount)):
             head_new = move(direction, head)
             new = [head_new]
-            prev_old = head
             for tail in tails:
                 if tail_need_to_move(new[-1], tail):
                     new.append(tail_new_position(new[-1], tail))
-                    prev_old = tail
                 else:
                     break
             head = head_new
@@ -78,5 +76,7 @@ def day9_part2():
     # print(positions)
     print(len(positions))
 
+
+day9_part1()
 
 day9_part2()
