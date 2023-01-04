@@ -1,0 +1,56 @@
+def get_lines():
+    with open("input_day8.txt") as myfile:
+        data = myfile.read()
+
+    return data.split("\n")
+
+
+lines = get_lines()
+
+my_map = [[int(char) for char in line] for line in lines]
+# pprint(my_map)
+
+
+def calc_visible(my_map):
+    counter = len(my_map[0]) + len(my_map[-1]) + 2 * len(my_map) - 4
+    for i, row in enumerate(my_map[1:-1], 1):
+        for k, value in enumerate(row[1:-1], 1):
+            if (
+                max(row[:k]) < value  # left
+                or max(row[k + 1 :]) < value  # right
+                or max(temp_row[k] for temp_row in my_map[:i]) < value  # top
+                or max(temp_row[k] for temp_row in my_map[i + 1 :]) < value  # bottom
+            ):
+                counter += 1
+    return counter
+
+
+def _calc_scenic_score(my_list: list[int], value: int) -> int:
+    for i, item in enumerate(my_list, 1):
+        if value <= item:
+            return i
+    return len(my_list)
+
+
+def calc_scenic_score(my_map):
+    highscore = 0
+    for i, row in enumerate(my_map[1:-1], 1):
+        for k, value in enumerate(row[1:-1], 1):
+            left = list(reversed(row[:k]))
+            right = row[k + 1 :]
+            top = list(reversed([temp_row[k] for temp_row in my_map[:i]]))
+            bottom = [temp_row[k] for temp_row in my_map[i + 1 :]]
+            score = (
+                _calc_scenic_score(left, value)
+                * _calc_scenic_score(right, value)
+                * _calc_scenic_score(top, value)
+                * _calc_scenic_score(bottom, value)
+            )
+            if score > highscore:
+                highscore = score
+
+    return highscore
+
+
+print(calc_visible(my_map))
+print(calc_scenic_score(my_map))
