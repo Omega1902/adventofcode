@@ -1,3 +1,4 @@
+import os
 import re
 from collections.abc import Collection
 
@@ -19,8 +20,12 @@ Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3"""
 
 
+def get_abs_path(filename):
+    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), filename))
+
+
 def get_data() -> str:
-    with open("input_day15.txt") as myfile:
+    with open(get_abs_path("input_day15.txt")) as myfile:
         return myfile.read()
 
 
@@ -82,20 +87,33 @@ class Grid:
         self.y_min = min(grid_item.y for grid_item in self.grid_items)
         self.y_max = max(grid_item.y for grid_item in self.grid_items)
         print(f"Matrix x {self.x_min} to {self.x_max} and y {self.y_min} to {self.y_max}")
+        self.sort_step = 100
+        self.sort_sensors()
+
+    def get_sorted_sensors(self, x: int) -> Collection[Sensor]:
+        return self.sorted_sensors[x // self.sort_step]
+
+    def add_sorted_sensor(self, sensor: Sensor, x_min: int, x_max: int) -> None:
+        for index in range(x_min // self.sort_step, x_max // self.sort_step + 1):
+            if index not in self.sorted_sensors.keys():
+                self.sorted_sensors[index] = set()
+            self.sorted_sensors[index].add(sensor)
+
+    def sort_sensors(self) -> None:
+        self.sorted_sensors = dict()  # [set()] * (self.x_max - self.x_min + 1)
+        for sensor in self.sensors:
+            self.add_sorted_sensor(
+                sensor, sensor.x - sensor.range_to_next_beacon, sensor.x + sensor.range_to_next_beacon
+            )
 
     def cannot_be_beacon(self, x: int, y: int) -> bool:
         beacons = tuple(beacon for beacon in self.beacons if beacon.x == x and beacon.y == y)
         if beacons:
             return False
-        sensors = tuple(sensor for sensor in self.sensors if sensor.x == x and sensor.y == y)
-        if sensors:
-            return True
         return any(sensor.closer_than_next_beacon(x, y) for sensor in self.sensors)
 
-    def can_be_distress_beacon(self, x: int, y: int) -> bool:
-        if tuple(grid_item for grid_item in self.grid_items if grid_item.x == x and grid_item.y == y):
-            return False
-        return not any(sensor.closer_than_next_beacon(x, y) for sensor in self.sensors)
+    def can_be_distress_beacon(self, x: int, y: int, sensors: Collection[Sensor]) -> bool:
+        return not any(sensor.closer_than_next_beacon(x, y) for sensor in sensors)
 
     def get_no_beacon(self, row: int) -> int:
         counter = 0
@@ -111,12 +129,13 @@ class Grid:
             counter += 1
             x += 1
         return counter
-        # return self.matrix[row].count("S") + self.matrix[row].count("#")
 
     def find_tuning_frequency(self, range_min: int, range_max: int) -> int:
         for x in trange(range_min, range_max + 1):
+            sensors = self.get_sorted_sensors(x)
+            # print(len(sensors))
             for y in range(range_min, range_max + 1):
-                if self.can_be_distress_beacon(x, y):
+                if self.can_be_distress_beacon(x, y, sensors):
                     return x * 4000000 + y
 
 
@@ -130,4 +149,4 @@ assert test_grid.get_no_beacon(10) == 26
 print(grid.get_no_beacon(2000000))  # 4033885 is to low
 
 assert test_grid.find_tuning_frequency(0, 20) == 56000011  # works
-print(grid.find_tuning_frequency(0, 4000000))  # might take 1-2 days to complete
+print(grid.find_tuning_frequency(0, 4000000))  # might take days to complete
