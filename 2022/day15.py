@@ -67,6 +67,12 @@ class Sensor(GridItem):
     def range_to_grid_item(self, other: GridItem):
         return self._range_to_coords(other.x, other.y)
 
+    def range_on_row(self, x: int) -> tuple[int, int]:
+        radius_on_row = self.range_to_next_beacon - self._range_to_coords(x, self.y)
+        if radius_on_row < 0:
+            return None
+        return self.y - radius_on_row, self.y + radius_on_row
+
     def closer_than_next_beacon(self, x: int, y: int) -> bool:
         return self._range_to_coords(x, y) <= self.range_to_next_beacon
 
@@ -130,13 +136,25 @@ class Grid:
             x += 1
         return counter
 
+    def find_distress_beacon(
+        self, x: int, sensors: Collection[Sensor], range_min: int, range_max: int
+    ) -> tuple[int, int]:
+        ranges = list(sensor_range for sensor in sensors if (sensor_range := sensor.range_on_row(x)) is not None)
+        ranges.sort()
+        index = range_min
+        for sensor_range in ranges:
+            if sensor_range[0] > index:
+                return x, index
+            index = max(sensor_range[1] + 1, index)
+        if index < range_max:
+            return x, index
+        return None
+
     def find_tuning_frequency(self, range_min: int, range_max: int) -> int:
         for x in trange(range_min, range_max + 1):
             sensors = self.get_sorted_sensors(x)
-            # print(len(sensors))
-            for y in range(range_min, range_max + 1):
-                if self.can_be_distress_beacon(x, y, sensors):
-                    return x * 4000000 + y
+            if (distress_beacon := self.find_distress_beacon(x, sensors, range_min, range_max)) is not None:
+                return distress_beacon[0] * 4_000_000 + distress_beacon[1]
 
 
 test_sensors = tuple(parse_data(test_data))
@@ -146,7 +164,7 @@ test_grid = Grid(test_sensors)
 grid = Grid(sensors)
 
 assert test_grid.get_no_beacon(10) == 26
-print(grid.get_no_beacon(2000000))  # 4033885 is to low
+print(grid.get_no_beacon(2_000_000))  # 4033885 is to low
 
-assert test_grid.find_tuning_frequency(0, 20) == 56000011  # works
-print(grid.find_tuning_frequency(0, 4000000))  # might take days to complete
+assert test_grid.find_tuning_frequency(0, 20) == 56_000_011  # works
+print(grid.find_tuning_frequency(0, 4_000_000))
