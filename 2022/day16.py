@@ -1,9 +1,10 @@
 import os
 import time
-from functools import partial
+from functools import lru_cache, partial
 from itertools import combinations
 from typing import Any, Iterable
 
+from frozendict import frozendict
 from tqdm import tqdm
 
 test_data = """Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
@@ -23,7 +24,7 @@ def timeit(func):
         start = time.perf_counter_ns()
         result = func(*args, **kwargs)
         stop = time.perf_counter_ns()
-        print(f"Process time {(stop-start)/1_000_000_000:.2f} s")
+        print(f"Process time {(stop-start)/1_000_000_000:.3f} s")
         return result
 
     return inner
@@ -38,13 +39,14 @@ def remove_save_from_list(my_list: list, value: Any):
 
 class Valve:
     def __init__(
-        self, name: str, flow_rate: int, tunnel_names: tuple[str, ...], opened: bool = False, my_map: dict = None
+        self, name: str, flow_rate: int, tunnel_names: tuple[str, ...], opened: bool = False, my_map: frozendict = None
     ):
         self.name = name
         self.flow_rate = flow_rate
         self.tunnel_names = tunnel_names
         self.open = opened
         self.my_map = my_map
+        self._opened_valve = None
 
     @classmethod
     def from_string(cls, description: str):
@@ -52,20 +54,22 @@ class Valve:
         name, description = description.split(" has flow rate=")
         flow_rate, desription = description.split("; tunnel")
         tunnel_names = desription.removeprefix("s lead to valves ").removeprefix(" leads to valve ")
-        return cls(name, int(flow_rate), list(tunnel_names.split(", ")))
+        return cls(name, int(flow_rate), tuple(tunnel_names.split(", ")))
 
-    def open_valve(self, minutes: int = None) -> int:
+    @property
+    def opened_valve(self):
+        if self._opened_valve is None:
+            self._opened_valve = Valve(self.name, self.flow_rate, self.tunnel_names, True, self.my_map)
+        return self._opened_valve
+
+    def open_valve(self, minutes: int):
         """If minutes if given, returns the amount of pressure released during that time"""
         if self.open:
-            return None if minutes is None else 0
-        self.open = True
-        return None if minutes is None else minutes * self.flow_rate
+            return self, 0
+        return self.opened_valve, minutes * self.flow_rate
 
     def to_open(self):
         return self.flow_rate > 0 and not self.open
-
-    def copy(self):
-        return Valve(self.name, self.flow_rate, self.tunnel_names, self.open, self.my_map)
 
     def setup_map(self, cave: dict):
         def get_next_tunnels(my_map, counter):
@@ -89,7 +93,7 @@ class Valve:
             if not next_tunnels:
                 raise ValueError()
             counter += 1
-        self.my_map = {valve.name: value for valve, value in my_map.items()}
+        self.my_map = frozendict({valve.name: value for valve, value in my_map.items()})
 
 
 def get_abs_path(filename: str) -> str:
@@ -103,7 +107,7 @@ def get_data() -> str:
 
 def parse_data(data: str) -> tuple[Valve]:
     valves = tuple(map(Valve.from_string, data.splitlines()))
-    cave = {valve.name: valve for valve in valves}
+    cave = frozendict({valve.name: valve for valve in valves})
     for valve in valves:
         valve.setup_map(cave)
     return cave
@@ -113,21 +117,18 @@ def get_valves_to_open(valves: Iterable[Valve]) -> Iterable[Valve]:
     return (valve for valve in valves if valve.to_open())
 
 
-def copy_cave(cave: dict[str, Valve]) -> dict[str, Valve]:
-    return {name: valve.copy() for name, valve in cave.items()}
-
-
-def current_flow_rate(cave: dict[str, Valve]) -> int:
+def current_flow_rate(cave: frozendict[str, Valve]) -> int:
     return sum(valve.flow_rate for valve in cave.values() if valve.open)
 
 
 def gen_future(cave: dict[str, Valve], current_valve_name: str, minutes: int) -> Iterable[int]:
     return (
-        _get_most_pressure_released(copy_cave(cave), current_valve_name, next_target.name, minutes)
+        _get_most_pressure_released(cave, current_valve_name, next_target.name, minutes)
         for next_target in get_valves_to_open(cave.values())
     )
 
 
+@lru_cache(maxsize=100_000)
 def _get_most_pressure_released(cave: dict[str, Valve], current_valve_name: str, next_valve: str, minutes: int) -> int:
     travel_and_work_time = cave[current_valve_name].my_map[next_valve] + 1
     travel_and_work_time = min(travel_and_work_time, minutes)
@@ -139,14 +140,15 @@ def _get_most_pressure_released(cave: dict[str, Valve], current_valve_name: str,
     # )
     if minutes == 0:
         return 0
-    released_pressure = cave[next_valve].open_valve(minutes)
+    new_valve, released_pressure = cave[next_valve].open_valve(minutes)
+    cave = cave.set(next_valve, new_valve)
     # future are all future possible solutions. Might be empty (if get_valves_to_open returns no elements)
     future = gen_future(cave, next_valve, minutes)
     return max(future, default=0) + released_pressure
 
 
 @timeit
-def get_most_pressure_released(cave: dict[str, Valve]) -> int:
+def get_most_pressure_released(cave: frozendict[str, Valve]) -> int:
     open_valves = len(tuple(get_valves_to_open(cave.values())))
     print("Valves that should be open:", open_valves)
     return max(tqdm(gen_future(cave, "AA", 30), total=open_valves))
@@ -181,17 +183,17 @@ def gen_future2(
 ) -> Iterable[int]:
     worker1 = current_valve1 is None
     worker2 = current_valve2 is None
-    my_pressure_released = partial(_get_most_pressure_released2, minutes=minutes)
+    my_pressure_released = partial(_get_most_pressure_released2, cave, minutes=minutes)
     open_valves = tuple(get_valves_to_open(cave.values()))
     if worker1 and not worker2:
         return (
-            my_pressure_released(copy_cave(cave), next_valve1, current_valve2, next_target.name, next_valve2)
+            my_pressure_released(next_valve1, current_valve2, next_target.name, next_valve2)
             for next_target in open_valves
             if next_target.name != next_valve2 or len(open_valves) == 1
         )
     elif worker2 and not worker1:
         return (
-            my_pressure_released(copy_cave(cave), current_valve1, next_valve2, next_valve1, next_target.name)
+            my_pressure_released(current_valve1, next_valve2, next_valve1, next_target.name)
             for next_target in open_valves
             if next_target.name != next_valve1 or len(open_valves) == 1
         )
@@ -200,7 +202,7 @@ def gen_future2(
             # only one valve left, just send both for that one
             # or nothing to do
             return (
-                my_pressure_released(copy_cave(cave), next_valve1, next_valve2, new_valve.name, new_valve.name)
+                my_pressure_released(next_valve1, next_valve2, new_valve.name, new_valve.name)
                 for new_valve in open_valves
             )
         # if both worker are at the same valve, we do not need to have permutations both way
@@ -210,7 +212,7 @@ def gen_future2(
             else partial(my_permutations, cave, next_valve1, next_valve2)
         )
         return (
-            my_pressure_released(copy_cave(cave), next_valve1, next_valve2, new_valve1.name, new_valve2.name)
+            my_pressure_released(next_valve1, next_valve2, new_valve1.name, new_valve2.name)
             for new_valve1, new_valve2 in select_valves(open_valves)
         )
     raise ValueError()  # should not be called without one workers opened a valve
@@ -219,7 +221,7 @@ def gen_future2(
 def find_in_between_step(cave: dict[str, Valve], next_valve: str, open_steps: int) -> str:
     for valve, steps in cave[next_valve].my_map.items():
         if steps == open_steps:
-            return valve
+            return valve, cave[valve]
 
 
 def get_current_valve_name(
@@ -229,10 +231,11 @@ def get_current_valve_name(
     If not, the worker reached a step inbetween. (-> Return string value)
     """
     if time_required == time_passed:
-        return None, cave[target_valve_name].open_valve(minutes)
-    return find_in_between_step(cave, target_valve_name, time_required - time_passed - 1), 0
+        return None, *cave[target_valve_name].open_valve(minutes)
+    return *find_in_between_step(cave, target_valve_name, time_required - time_passed - 1), 0
 
 
+@lru_cache(maxsize=100_000_000)
 def _get_most_pressure_released2(
     cave: dict[str, Valve],
     current_valve1: str,
@@ -249,9 +252,13 @@ def _get_most_pressure_released2(
         return 0
 
     process_time_passed = partial(get_current_valve_name, cave, minutes, travel_and_work_time)
-    current_valve1, released_pressure_temp1 = process_time_passed(travel_and_work_time1, next_valve1)
-    current_valve2, released_pressure_temp2 = process_time_passed(travel_and_work_time2, next_valve2)
+    current_valve1, new_valve1, released_pressure_temp1 = process_time_passed(travel_and_work_time1, next_valve1)
+    current_valve2, new_valve2, released_pressure_temp2 = process_time_passed(travel_and_work_time2, next_valve2)
     released_pressure = released_pressure_temp1 + released_pressure_temp2
+    if current_valve1 is None:
+        cave = cave.set(next_valve1, new_valve1)
+    if current_valve2 is None:
+        cave = cave.set(next_valve2, new_valve2)
     # open_valves = tuple(get_valves_to_open(cave.values()))
     # print(
     #     f"{minutes} m left, goto Valve {next_valve1}, elephant goes to Valve {next_valve2}, released "
@@ -262,7 +269,7 @@ def _get_most_pressure_released2(
 
 
 @timeit
-def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
+def get_most_pressure_released2(cave: frozendict[str, Valve]) -> int:
     open_valves = len(tuple(get_valves_to_open(cave.values())))
     print("Valves that should be open:", open_valves)
     return max(tqdm(gen_future2(cave, None, None, "AA", "AA", 26), total=(open_valves * (open_valves - 1)) // 2))
@@ -272,7 +279,7 @@ test_cave = parse_data(test_data)
 cave = parse_data(get_data())
 
 assert get_most_pressure_released(test_cave) == 1651
-print(get_most_pressure_released(cave))  # takes a couple of minutes
+# print(get_most_pressure_released(cave))  # takes a couple of minutes
 
 assert get_most_pressure_released2(test_cave) == 1707
 print(get_most_pressure_released2(cave))  # takes to long to compute

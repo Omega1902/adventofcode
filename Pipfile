@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 tqdm = "*"
+frozendict = "*"
 
 [dev-packages]
 black = "==22.12.0"
