@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from utils import get_lines
 
 stacks = {
     1: [["Z"], ["P"], ["B"], ["Q"], ["M"], ["D"], ["N"]],
@@ -15,21 +15,11 @@ stacks = {
 stacks_test = {1: [["N"], ["Z"]], 2: [["D"], ["C"], ["M"]], 3: [["P"]]}
 
 
-def move_stack(stacks: dict[list[list[str]]], amount: int, index_from: int, index_to: int):
-    moving = stacks[index_from][0:amount]
+def move_stack(stacks: dict[int, list[list[str]]], amount: int, index_from: int, index_to: int):
+    moving = stacks[index_from][:amount]
     stacks[index_from] = stacks[index_from][amount:]
     for item in moving:
         stacks[index_to].insert(0, item)
-
-
-def get_lines() -> Collection[str]:
-    with open("input_day5.txt") as myfile:
-        data = myfile.read()
-    #     data = """move 1 from 2 to 1
-    # move 3 from 1 to 3
-    # move 2 from 2 to 1
-    # move 1 from 1 to 2"""
-    return data.split("\n")
 
 
 def parse_line(line: str) -> tuple[int, int, int]:
@@ -41,10 +31,13 @@ def parse_line(line: str) -> tuple[int, int, int]:
     return amount, index_from, index_to
 
 
-for line in get_lines():
+test_data = """move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2""".splitlines()
+
+for line in get_lines("input_day5.txt"):
     amount, index_from, index_to = parse_line(line)
     move_stack(stacks, amount, index_from, index_to)
-result = ""
-for i in range(1, 10):
-    result += stacks[i][0][0]
+result = "".join(stacks[i][0][0] for i in range(1, 10))
 print(result)  # MGDMPSZTM wrong

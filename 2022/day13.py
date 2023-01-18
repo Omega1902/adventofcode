@@ -1,6 +1,8 @@
 from functools import cmp_to_key, reduce
 from typing import Iterable
 
+from utils import get_data
+
 test_data = """[1,1,3,1,1]
 [1,1,5,1,1]
 
@@ -26,13 +28,6 @@ test_data = """[1,1,3,1,1]
 [1,[2,[3,[4,[5,6,0]]]],8,9]"""
 
 
-def get_data():
-    with open("input_day13.txt") as myfile:
-        data = myfile.read()
-
-    return data
-
-
 def find_matching_bracket(line: str, start: int = 0) -> int:
     bracket_depth = 0
     for i, char in enumerate(line[start:], start=start):
@@ -51,7 +46,7 @@ def parse_array_string(line: str) -> list:
     while content:
         if content.startswith("["):
             rindex = find_matching_bracket(content)
-            item = parse_array_string(content[0 : rindex + 1])
+            item = parse_array_string(content[: rindex + 1])
             result.append(item)
             content = content[rindex + 1 :]
             content = content.removeprefix(",")
@@ -69,18 +64,18 @@ def parse_array_string(line: str) -> list:
             except ValueError:
                 print(content)
                 raise
-            content = []
+            content = ""
     return result
 
 
 assert parse_array_string("[[1,[]],[2,3,4]]") == [[1, []], [2, 3, 4]]
 
 
-def parse_pairs(pair: str) -> tuple[list]:
+def parse_pairs(pair: str) -> tuple[list, ...]:
     return tuple(map(parse_array_string, pair.splitlines()))
 
 
-def parse_data(data: str) -> Iterable[tuple[list]]:
+def parse_data(data: str) -> Iterable[tuple[list, ...]]:
     pairs = data.split("\n\n")
     return map(parse_pairs, pairs)
 
@@ -98,22 +93,17 @@ def right_order(left: list, right: list) -> int:
         elif isinstance(left_item, int):
             if (result := right_order([left_item], right_item)) != 0:
                 return result
-        else:
-            if (result := right_order(left_item, [right_item])) != 0:
-                return result
-    if len(left) > len(right):
-        return -1
-    if len(left) < len(right):
-        return 1
-    return 0
+        elif (result := right_order(left_item, [right_item])) != 0:
+            return result
+    return len(right) - len(left)
 
 
-def compare_pairs(pairs: Iterable[tuple[list]]) -> int:
-    return sum(i for i, pair in enumerate(pairs, 1) if right_order(*pair) == 1)
+def compare_pairs(pairs: Iterable[tuple[list, ...]]) -> int:
+    return sum(i for i, pair in enumerate(pairs, 1) if right_order(*pair) > 0)
 
 
 test_pairs = tuple(parse_data(test_data))
-pairs = tuple(parse_data(get_data()))
+pairs = tuple(parse_data(get_data("input_day13.txt")))
 
 assert compare_pairs(test_pairs) == 13
 print(compare_pairs(pairs))
@@ -130,7 +120,7 @@ def find_divider_packets(package: list) -> bool:
     return package in ([[2]], [[6]])
 
 
-def decoder_key(pairs: Iterable[tuple[list]]) -> int:
+def decoder_key(pairs: tuple[tuple[list, ...]]) -> int:
     pairs = pairs + (([[2]], [[6]]),)
     packages = sort_packages(pairs)
     # pprint(packages)

@@ -2,13 +2,7 @@ from collections.abc import Collection, Iterable
 from functools import reduce
 from itertools import tee
 
-
-def get_data():
-    with open("input_day14.txt") as myfile:
-        data = myfile.read()
-
-    return data
-
+from utils import get_data
 
 test_data = """498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9"""
@@ -29,19 +23,19 @@ def parse_data(data: str) -> tuple[StonePath, ...]:
     return tuple(map(parse_line, data.splitlines()))
 
 
-def find_smallest_x(paths: Iterable[StonePath, ...]):
+def find_smallest_x(paths: Iterable[StonePath]):
     return min(coord[0] for path in paths for coord in path)
 
 
-def find_highest_x(paths: Iterable[StonePath, ...]):
+def find_highest_x(paths: Iterable[StonePath]):
     return max(coord[0] for path in paths for coord in path)
 
 
-def find_smallest_y(paths: Iterable[StonePath, ...]):
+def find_smallest_y(paths: Iterable[StonePath]):
     return min(coord[1] for path in paths for coord in path)
 
 
-def find_highest_y(paths: Iterable[StonePath, ...]):
+def find_highest_y(paths: Iterable[StonePath]):
     return max(coord[1] for path in paths for coord in path)
 
 
@@ -59,7 +53,7 @@ movements = (downward, left_down, right_down)
 
 
 class Canvas:
-    def __init__(self, paths: Collection[StonePath, ...], floor=False):
+    def __init__(self, paths: Collection[StonePath], floor=False):
         self.x_min = find_smallest_x(paths)
         self.x_max = find_highest_x(paths) + 1
         print(f"X axis from {self.x_min} to {self.x_max}")
@@ -99,7 +93,7 @@ class Canvas:
             # print(f"Draw {point1} to {point2}")
             self.draw_line(point1, point2, "#")
 
-    def draw_paths(self, paths: Collection[StonePath, ...]):
+    def draw_paths(self, paths: Collection[StonePath]):
         tuple(map(self.draw_path, paths))
 
     def draw_floor(self):
@@ -127,7 +121,7 @@ class Canvas:
         if self.floor:
             if point[0] >= self.x_max:
                 self.add_column_right()
-            elif self.floor and point[0] < self.x_min:
+            elif point[0] < self.x_min:
                 self.add_column_left()
         elif point[0] > self.x_max or point[0] < self.x_min or point[1] > self.y_max:
             # point[1] < self.y_min not necessary
@@ -137,8 +131,8 @@ class Canvas:
     def find_next_sand_point(self):
         cur_pos = self.sand
         while True:
+            moved = False
             for move in movements:
-                moved = False
                 next_pos = move(cur_pos)
                 if self.point_is_empty(next_pos):
                     cur_pos = next_pos
@@ -176,7 +170,7 @@ def task2(paths):
 
 
 test_paths = parse_data(test_data)
-paths = parse_data(get_data())
+paths = parse_data(get_data("input_day14.txt"))
 
 assert task1(test_paths) == 24
 print(task1(paths))

@@ -1,3 +1,8 @@
+from typing import Union
+
+from utils import get_lines
+
+
 class Rock:
     points = 1
 
@@ -64,24 +69,17 @@ class Scissors:
         return Rock()
 
 
-def rock_paper_scissors_factory(item: str):
-    if item in ("A", "X"):
+def rock_paper_scissors_factory(item: str) -> Union[Rock, Paper, Scissors]:
+    if item in {"A", "X"}:
         return Rock()
-    if item in ("B", "Y"):
+    if item in {"B", "Y"}:
         return Paper()
-    if item in ("C", "Z"):
+    if item in {"C", "Z"}:
         return Scissors()
+    raise ValueError("You did not choose a proper character for Rock, Paper or Scissors")
 
 
-def get_lines():
-    with open("input_day2.txt") as myfile:
-        data = myfile.read()
-
-    return data.split("\n")
-
-
-lines = get_lines()
-
+lines = get_lines("input_day2.txt")
 
 points = 0
 for line in lines:
@@ -102,10 +100,12 @@ for line in lines:
     other = rock_paper_scissors_factory(other)
     if mine == "X":
         mine = other.wins_against()
-    if mine == "Y":
+    elif mine == "Y":
         mine = other
-    if mine == "Z":
+    elif mine == "Z":
         mine = other.looses_against()
+    else:
+        raise ValueError("Should have been X, Y or Z")
     points += mine.points
     points += mine.win_points(other)
 print(points)

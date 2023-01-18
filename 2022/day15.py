@@ -1,8 +1,9 @@
-import os
 import re
 from collections.abc import Collection
+from typing import Optional
 
 from tqdm import trange
+from utils import get_data
 
 test_data = """Sensor at x=2, y=18: closest beacon is at x=-2, y=15
 Sensor at x=9, y=16: closest beacon is at x=10, y=16
@@ -20,21 +21,11 @@ Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3"""
 
 
-def get_abs_path(filename):
-    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), filename))
-
-
-def get_data() -> str:
-    with open(get_abs_path("input_day15.txt")) as myfile:
-        return myfile.read()
-
-
 def parse_line(data: str):
     pattern = r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)"
     sx, sy, bx, by = re.findall(pattern, data)[0]
     beacon = Beacon(int(bx), int(by))
-    sensor = Sensor(int(sx), int(sy), beacon)
-    return sensor
+    return Sensor(int(sx), int(sy), beacon)
 
 
 def parse_data(data: str):
@@ -67,7 +58,7 @@ class Sensor(GridItem):
     def range_to_grid_item(self, other: GridItem):
         return self._range_to_coords(other.x, other.y)
 
-    def range_on_row(self, x: int) -> tuple[int, int]:
+    def range_on_row(self, x: int) -> Optional[tuple[int, int]]:
         radius_on_row = self.range_to_next_beacon - self._range_to_coords(x, self.y)
         if radius_on_row < 0:
             return None
@@ -86,7 +77,7 @@ class Sensor(GridItem):
 class Grid:
     def __init__(self, sensors: Collection[Sensor]):
         self.sensors = sensors
-        self.beacons = set(sensor.beacon for sensor in sensors)
+        self.beacons = {sensor.beacon for sensor in sensors}
         self.grid_items = self.beacons.union(sensors)
         self.x_min = min(grid_item.x for grid_item in self.grid_items)
         self.x_max = max(grid_item.x for grid_item in self.grid_items)
@@ -106,7 +97,7 @@ class Grid:
             self.sorted_sensors[index].add(sensor)
 
     def sort_sensors(self) -> None:
-        self.sorted_sensors = dict()  # [set()] * (self.x_max - self.x_min + 1)
+        self.sorted_sensors = {}  # [set()] * (self.x_max - self.x_min + 1)
         for sensor in self.sensors:
             self.add_sorted_sensor(
                 sensor, sensor.x - sensor.range_to_next_beacon, sensor.x + sensor.range_to_next_beacon
@@ -138,27 +129,26 @@ class Grid:
 
     def find_distress_beacon(
         self, x: int, sensors: Collection[Sensor], range_min: int, range_max: int
-    ) -> tuple[int, int]:
-        ranges = list(sensor_range for sensor in sensors if (sensor_range := sensor.range_on_row(x)) is not None)
+    ) -> Optional[tuple[int, int]]:
+        ranges = [sensor_range for sensor in sensors if (sensor_range := sensor.range_on_row(x)) is not None]
         ranges.sort()
         index = range_min
         for sensor_range in ranges:
             if sensor_range[0] > index:
                 return x, index
             index = max(sensor_range[1] + 1, index)
-        if index < range_max:
-            return x, index
-        return None
+        return (x, index) if index < range_max else None
 
     def find_tuning_frequency(self, range_min: int, range_max: int) -> int:
         for x in trange(range_min, range_max + 1):
             sensors = self.get_sorted_sensors(x)
             if (distress_beacon := self.find_distress_beacon(x, sensors, range_min, range_max)) is not None:
                 return distress_beacon[0] * 4_000_000 + distress_beacon[1]
+        raise ValueError("No distress beacon!")
 
 
 test_sensors = tuple(parse_data(test_data))
-sensors = tuple(parse_data(get_data()))
+sensors = tuple(parse_data(get_data("input_day15.txt")))
 
 test_grid = Grid(test_sensors)
 grid = Grid(sensors)

@@ -1,12 +1,6 @@
-def get_lines():
-    with open("input_day10.txt") as myfile:
-        data = myfile.read()
+from utils import get_lines
 
-    return data.split("\n")
-
-
-lines = get_lines()
-
+lines = get_lines("input_day10.txt")
 
 cur_val = 1
 signals = [cur_val]
@@ -40,7 +34,7 @@ for signal in signals[1:]:
     else:
         result_screen[screen_index] += low
     CRC += 1
-    CRC = CRC % 40
+    CRC %= 40
 
 for line in result_screen:
     print(line)

@@ -108,16 +108,18 @@ class Monkey:
             item = self.operation(item)
             # item = item // 3
             item = item % self.get_kgv()
-            if item % self.test_param == 0:
-                index = self.monkey_true
-            else:
-                index = self.monkey_false
+            index = self.monkey_true if item % self.test_param == 0 else self.monkey_false
             Monkey.monkeys[index].items.append(item)
         self.items_inspected += len(self.items)
         self.items = []
 
     @classmethod
     def from_string(cls, monkey_description: str):
+        items = None
+        operation = None
+        test_param = None
+        monkey_true = None
+        monkey_false = None
         for line in monkey_description.split("\n"):
             if line.startswith("  Starting items: "):
                 items = line.removeprefix("  Starting items: ").split(", ")
@@ -144,12 +146,14 @@ class Monkey:
                 monkey_true = int(line.removeprefix("    If true: throw to monkey "))
             elif line.startswith("    If false: throw to monkey "):
                 monkey_false = int(line.removeprefix("    If false: throw to monkey "))
+        if items is None or operation is None or test_param is None or monkey_true is None or monkey_false is None:
+            raise ValueError("monkey_description does not describe a monkey")
         return Monkey(items, operation, test_param, monkey_true, monkey_false)
 
     @classmethod
     def get_kgv(cls):
         if cls._kgv is None:
-            primes = set(x.test_param for x in cls.monkeys)
+            primes = {x.test_param for x in cls.monkeys}
             cls._kgv = reduce(lambda x, y: x * y, primes)
             tqdm.write(f"Set kgv to {cls._kgv}")
         return cls._kgv

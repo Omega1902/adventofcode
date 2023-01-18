@@ -1,11 +1,6 @@
-def get_lines():
-    with open("input_day4.txt") as myfile:
-        data = myfile.read()
+from utils import get_lines
 
-    return data.split("\n")
-
-
-lines = get_lines()
+lines = get_lines("input_day4.txt")
 
 
 def contained(elf1_start: int, elf1_stop: int, elf2_start: int, elf2_stop: int) -> bool:

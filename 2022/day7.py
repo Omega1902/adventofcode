@@ -1,15 +1,12 @@
-def get_lines():
-    with open("input_day7.txt") as myfile:
-        data = myfile.read()
+from typing import Optional
 
-    return data.split("\n")
+from utils import get_lines
 
-
-lines = get_lines()
+lines = get_lines("input_day7.txt")
 
 
 class Directory:
-    def __init__(self, parent, name: str, children: list = None):
+    def __init__(self, parent: "Directory", name: str, children: Optional[list] = None):
         self.parent = parent
         self.name = name
         self.children = children or []
@@ -28,7 +25,7 @@ class File:
         return self.size
 
 
-def change_directory(line: str, current_directory: Directory):
+def change_directory(line: str, current_directory: Directory) -> Directory:
     directory = line[5:]
     if directory == "/":
         return ROOT
@@ -44,6 +41,7 @@ def change_directory(line: str, current_directory: Directory):
         print(
             [child for child in current_directory.children if child.name == directory and isinstance(child, Directory)]
         )
+        raise
 
 
 ROOT = Directory(None, "root")
@@ -64,7 +62,7 @@ for line in lines:
         current_directory.children.append(new_file)
 
 
-def find_directories_by_size(current_directory: Directory, threshold: int = 100000):
+def find_directories_by_size(current_directory: Directory, threshold: Optional[int] = 100000):
     result = []
     if threshold is None or current_directory.get_size() <= threshold:
         result.append(current_directory)
@@ -84,7 +82,7 @@ free_space_needed = 30_000_000
 current_size = ROOT.get_size()
 current_free = total_size - current_size
 to_delete = free_space_needed - current_free
-print("Currently free: " + str(current_free) + ", Need " + str(to_delete))
+print(f"Currently free: {current_free}, Need {to_delete}")
 r2 = find_directories_by_size(ROOT, None)
 r2 = [child for child in r2 if child.get_size() > to_delete]
 r2 = sorted(r2, key=lambda d: d.get_size())

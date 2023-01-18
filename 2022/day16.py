@@ -1,10 +1,10 @@
-import os
 import time
 from functools import partial
 from itertools import combinations
 from typing import Any, Iterable
 
 from tqdm import tqdm
+from utils import get_data
 
 test_data = """Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
 Valve BB has flow rate=13; tunnels lead to valves CC, AA
@@ -90,15 +90,6 @@ class Valve:
                 raise ValueError()
             counter += 1
         self.my_map = {valve.name: value for valve, value in my_map.items()}
-
-
-def get_abs_path(filename: str) -> str:
-    return os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), filename))
-
-
-def get_data() -> str:
-    with open(get_abs_path("input_day16.txt")) as myfile:
-        return myfile.read()
 
 
 def parse_data(data: str) -> tuple[Valve]:
@@ -269,7 +260,7 @@ def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
 
 
 test_cave = parse_data(test_data)
-cave = parse_data(get_data())
+cave = parse_data(get_data("input_day16.txt"))
 
 assert get_most_pressure_released(test_cave) == 1651
 print(get_most_pressure_released(cave))  # takes a couple of minutes

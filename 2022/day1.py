@@ -1,8 +1,7 @@
-with open("input_day1.txt") as myfile:
-    data = myfile.read()
+from utils import get_lines
 
 elves = [[]]
-lines = data.split("\n")
+lines = get_lines("input_day1.txt")
 for line in lines:
     if line:
         elves[-1].append(int(line))

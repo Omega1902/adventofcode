@@ -1,11 +1,6 @@
-def get_lines():
-    with open("input_day3.txt") as myfile:
-        data = myfile.read()
+from utils import get_lines
 
-    return data.split("\n")
-
-
-lines = get_lines()
+lines = get_lines("input_day3.txt")
 
 priority = [
     0,

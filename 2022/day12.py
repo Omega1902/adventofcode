@@ -1,5 +1,8 @@
-from collections.abc import Collection, Generator
+from collections.abc import Iterable
 from functools import partial
+from typing import Optional
+
+from utils import get_data
 
 test_data = """Sabqponm
 abcryxxl
@@ -8,7 +11,7 @@ acctuvwj
 abdefghi"""
 
 Coord = tuple[int, int]
-Matrix = Collection[Collection[int]]
+Matrix = list[list[int]]
 weights = {
     "a": 0,
     "b": 1,
@@ -39,12 +42,7 @@ weights = {
 }
 
 
-def get_data() -> str:
-    with open("input_day12.txt") as myfile:
-        return myfile.read()
-
-
-def parse_row(row: str) -> tuple[int, int, Matrix]:
+def parse_row(row: str) -> tuple[Optional[int], Optional[int], list[int]]:
     result = []
     start = None
     stop = None
@@ -73,10 +71,12 @@ def parse_data(data: str) -> tuple[Coord, Coord, Matrix]:
             start = (i, start_column)
         if stop_column is not None:
             stop = (i, stop_column)
+    if start is None or stop is None:
+        raise ValueError("data cannot be parsed")
     return start, stop, result
 
 
-def get_possible_nodes_for_node(node: Coord) -> Generator[Coord]:
+def get_possible_nodes_for_node(node: Coord) -> Iterable[Coord]:
     yield (node[0] - 1, node[1])
     yield (node[0], node[1] - 1)
     yield (node[0], node[1] + 1)
@@ -132,10 +132,10 @@ def dijkstra(start: Coord, stop: Coord, matrix: Matrix) -> int:
             # seems like we cannot add any node - it is not possible to reach the target
             return 1_000_000_000
         nodes_to_add = {
-            key: nodes_to_add[key] for key in nodes_to_add_heuristic.keys() if nodes_to_add_heuristic[key] == min_steps
+            key: nodes_to_add[key] for key in nodes_to_add_heuristic if nodes_to_add_heuristic[key] == min_steps
         }
-        visited_nodes.update(nodes_to_add)
-        visited_nodes_open.update(nodes_to_add)
+        visited_nodes |= nodes_to_add
+        visited_nodes_open |= nodes_to_add
     return visited_nodes[stop]
 
 
@@ -152,7 +152,7 @@ def find_shortest(stop: Coord, matrix: Matrix) -> int:
 
 
 test_start, test_stop, test_matrix = parse_data(test_data)
-start, stop, matrix = parse_data(get_data())
+start, stop, matrix = parse_data(get_data("input_day12.txt"))
 
 assert dijkstra(test_start, test_stop, test_matrix) == 31
 print(dijkstra(start, stop, matrix))

@@ -1,9 +1,8 @@
-def get_data() -> str:
-    with open("input_day18.txt") as myfile:
-        return myfile.read()
+from typing import Callable, Iterable, Optional
 
+from utils import get_data
 
-data = get_data()
+data = get_data("input_day18.txt")
 test_data = """2,2,2
 1,2,2
 3,2,2
@@ -18,25 +17,28 @@ test_data = """2,2,2
 2,1,5
 2,3,5"""
 
+Cube = tuple[int, int, int]
+Dims = tuple[int, int, int, int, int, int]
 
-def parse_line(line):
+
+def parse_line(line: str) -> Cube:
     x, y, z = line.split(",")
     return (int(x), int(y), int(z))
 
 
-def parse_data(data):
+def parse_data(data: str) -> set[Cube]:
     return set(map(parse_line, data.splitlines()))
 
 
-def is_lava(cube, cubes):
+def is_lava(cube: Cube, cubes: set[Cube]) -> bool:
     return cube in cubes
 
 
-def is_not_lava(cube, cubes, *args):
+def is_not_lava(cube: Cube, cubes: set[Cube], *args) -> bool:
     return not is_lava(cube, cubes)
 
 
-def is_in_dim(cube, dims):
+def is_in_dim(cube: Cube, dims: Dims) -> bool:
     # print(type(cube), type(dims))
     return (
         cube[0] >= dims[0]
@@ -48,7 +50,7 @@ def is_in_dim(cube, dims):
     )
 
 
-def is_air(cube, cubes, dims, air_bubble=None):
+def is_air(cube: Cube, cubes: set[Cube], dims, air_bubble: Optional[set[Cube]] = None) -> bool:
     global air
     if cube in air:
         return True
@@ -65,19 +67,18 @@ def is_air(cube, cubes, dims, air_bubble=None):
         result = all(is_air(neighbour, cubes, dims, air_bubble) for neighbour in neighbours)
     except Exception:
         print(cube)
+        raise
     if result and is_root:
         air.update(air_bubble)
         # print(f"bubble size {len(air_bubble)}")
     return result
 
 
-def is_water(cube, cubes, dims):
-    if is_lava(cube, cubes):
-        return False
-    return not is_air(cube, cubes, dims)
+def is_water(cube: Cube, cubes: set[Cube], dims: Dims) -> bool:
+    return False if is_lava(cube, cubes) else not is_air(cube, cubes, dims)
 
 
-def get_neighbours(cube):
+def get_neighbours(cube: Cube) -> Iterable[Cube]:
     x, y, z = cube
     yield (x + 1, y, z)
     yield (x - 1, y, z)
@@ -87,14 +88,14 @@ def get_neighbours(cube):
     yield (x, y, z - 1)
 
 
-def parts(cubes, strategy, dims):
+def parts(cubes: set[Cube], strategy: Callable[[Cube, set[Cube], Dims], bool], dims: Dims) -> None:
     exposed_surfaces = (
         1 if strategy(neighbour, cubes, dims) else 0 for cube in cubes for neighbour in get_neighbours(cube)
     )
     print(sum(exposed_surfaces))
 
 
-def get_dims(cubes) -> tuple[int, int, int, int, int, int]:
+def get_dims(cubes: set[Cube]) -> Dims:
     x_min = min(cube[0] for cube in cubes)
     x_max = max(cube[0] for cube in cubes)
     y_min = min(cube[1] for cube in cubes)

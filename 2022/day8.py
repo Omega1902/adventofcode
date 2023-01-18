@@ -1,11 +1,6 @@
-def get_lines():
-    with open("input_day8.txt") as myfile:
-        data = myfile.read()
+from utils import get_lines
 
-    return data.split("\n")
-
-
-lines = get_lines()
+lines = get_lines("input_day8.txt")
 
 my_map = [[int(char) for char in line] for line in lines]
 # pprint(my_map)
@@ -26,10 +21,7 @@ def calc_visible(my_map):
 
 
 def _calc_scenic_score(my_list: list[int], value: int) -> int:
-    for i, item in enumerate(my_list, 1):
-        if value <= item:
-            return i
-    return len(my_list)
+    return next((i for i, item in enumerate(my_list, 1) if value <= item), len(my_list))
 
 
 def calc_scenic_score(my_map):
