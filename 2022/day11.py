@@ -129,13 +129,13 @@ class Monkey:
                 if operation == "+":
                     try:
                         operator = int(operator)
-                        operation = lambda x: x + operator
+                        operation = lambda x: x + operator  # noqa: B023
                     except ValueError:
                         operation = lambda x: x + x
                 elif operation == "*":
                     try:
                         operator = int(operator)
-                        operation = lambda x: x * operator
+                        operation = lambda x: x * operator  # noqa: B023
                     except ValueError:
                         operation = lambda x: x * x
                 else:
