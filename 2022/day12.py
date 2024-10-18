@@ -56,7 +56,7 @@ def parse_row(row: str) -> tuple[Optional[int], Optional[int], list[int]]:
             result.append(25)
             stop = i
         else:
-            raise ValueError()
+            raise ValueError
     return start, stop, result
 
 
@@ -107,7 +107,7 @@ def dijkstra(start: Coord, stop: Coord, matrix: Matrix) -> int:
     visited_nodes = {start: 0}
     width = len(matrix[0])
     length = len(matrix)
-    while stop not in visited_nodes.keys():
+    while stop not in visited_nodes:
         nodes_to_add = {}
         to_remove = set()
         for visited_node, steps in visited_nodes_open.items():
@@ -154,8 +154,8 @@ def find_shortest(stop: Coord, matrix: Matrix) -> int:
 test_start, test_stop, test_matrix = parse_data(test_data)
 start, stop, matrix = parse_data(get_data("input_day12.txt"))
 
-assert dijkstra(test_start, test_stop, test_matrix) == 31
+assert dijkstra(test_start, test_stop, test_matrix) == 31  # noqa: PLR2004
 print(dijkstra(start, stop, matrix))
 
-assert find_shortest(test_stop, test_matrix) == 29
+assert find_shortest(test_stop, test_matrix) == 29  # noqa: PLR2004
 print(find_shortest(stop, matrix))

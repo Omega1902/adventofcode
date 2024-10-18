@@ -14,7 +14,7 @@ class Rock:
             return 0
         if isinstance(other, Scissors):
             return 6
-        raise ValueError()
+        raise ValueError
 
     @staticmethod
     def wins_against():
@@ -36,7 +36,7 @@ class Paper:
             return 3
         if isinstance(other, Scissors):
             return 0
-        raise ValueError()
+        raise ValueError
 
     @staticmethod
     def wins_against():
@@ -58,7 +58,7 @@ class Scissors:
             return 6
         if isinstance(other, Scissors):
             return 3
-        raise ValueError()
+        raise ValueError
 
     @staticmethod
     def wins_against():

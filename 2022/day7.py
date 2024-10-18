@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from utils import get_lines
 
@@ -6,7 +6,7 @@ lines = get_lines("input_day7.txt")
 
 
 class Directory:
-    def __init__(self, parent: "Directory", name: str, children: Optional[list] = None):
+    def __init__(self, parent: "Directory", name: str, children: Optional[list[Union["Directory", "File"]]] = None):
         self.parent = parent
         self.name = name
         self.children = children or []
@@ -32,9 +32,9 @@ def change_directory(line: str, current_directory: Directory) -> Directory:
     if directory == "..":
         return current_directory.parent
     try:
-        return [
+        return next(
             child for child in current_directory.children if child.name == directory and isinstance(child, Directory)
-        ][0]
+        )
     except IndexError:
         print(line)
         print(directory)

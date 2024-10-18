@@ -92,7 +92,7 @@ class Grid:
 
     def add_sorted_sensor(self, sensor: Sensor, x_min: int, x_max: int) -> None:
         for index in range(x_min // self.sort_step, x_max // self.sort_step + 1):
-            if index not in self.sorted_sensors.keys():
+            if index not in self.sorted_sensors:
                 self.sorted_sensors[index] = set()
             self.sorted_sensors[index].add(sensor)
 
@@ -153,8 +153,8 @@ sensors = tuple(parse_data(get_data("input_day15.txt")))
 test_grid = Grid(test_sensors)
 grid = Grid(sensors)
 
-assert test_grid.get_no_beacon(10) == 26
+assert test_grid.get_no_beacon(10) == 26  # noqa: PLR2004
 print(grid.get_no_beacon(2_000_000))  # 4033885 is to low
 
-assert test_grid.find_tuning_frequency(0, 20) == 56_000_011  # works
+assert test_grid.find_tuning_frequency(0, 20) == 56_000_011  # noqa: PLR2004
 print(grid.find_tuning_frequency(0, 4_000_000))

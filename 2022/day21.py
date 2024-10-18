@@ -129,8 +129,8 @@ def get_humn_number(monkeys: dict[str, Monkey]) -> float:
 monkeys_test = parse_data(test_data)
 monkeys = parse_data(get_data("input_day21.txt"))
 
-assert get_root_number(monkeys_test) == 152
+assert get_root_number(monkeys_test) == 152  # noqa: PLR2004
 print(get_root_number(monkeys))
 
-assert get_humn_number(monkeys_test) == 301
+assert get_humn_number(monkeys_test) == 301  # noqa: PLR2004
 print(get_humn_number(monkeys))

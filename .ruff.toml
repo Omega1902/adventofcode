@@ -4,8 +4,22 @@ extend-exclude = [".vscode", "htmlcov"]
 fix = true
 
 [lint]
-# On top of the default `select` (E, F), enable isort (I), flake8-bugbear (B) and flake8-bandit (S)
-extend-select = ["I", "B", "S"]
+# On top of the default `select` (E, F), enable:
+# Warnings of pycodestyles (W)
+# isort (I)
+# flake8-bandit (S)
+# flake8-bugbear (B)
+# flake8-builtins (A)
+# flake8-comprehensions (C4)
+# flake8-logging (LOG)
+# flake8-logging-format (G)
+# flake8-raise (RSE)
+# flake8-return (RET)
+# flake8-siplify (SIM)
+# pylint (PL)
+# perflint (PERF)
+# Ruff-specific rules (RUF)
+extend-select = ["W", "I", "S", "B", "A", "C4", "LOG", "G", "RSE", "RET", "SIM", "PL", "PERF", "RUF"]
 # I want to use lambdas
 ignore = ["E731", "S101"]
 

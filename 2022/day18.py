@@ -51,7 +51,6 @@ def is_in_dim(cube: Cube, dims: Dims) -> bool:
 
 
 def is_air(cube: Cube, cubes: set[Cube], dims, air_bubble: Optional[set[Cube]] = None) -> bool:
-    global air
     if cube in air:
         return True
     is_root = False
