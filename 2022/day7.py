@@ -6,12 +6,14 @@ lines = get_lines("input_day7.txt")
 
 
 class Directory:
-    def __init__(self, parent: "Directory", name: str, children: Optional[list[Union["Directory", "File"]]] = None):
+    def __init__(
+        self, parent: Optional["Directory"], name: str, children: Optional[list[Union["Directory", "File"]]] = None
+    ):
         self.parent = parent
         self.name = name
         self.children = children or []
 
-    def get_size(self):
+    def get_size(self) -> int:
         return sum(child.get_size() for child in self.children)
 
 
@@ -21,7 +23,7 @@ class File:
         self.name = name
         self.size = size
 
-    def get_size(self):
+    def get_size(self) -> int:
         return self.size
 
 
@@ -30,6 +32,8 @@ def change_directory(line: str, current_directory: Directory) -> Directory:
     if directory == "/":
         return ROOT
     if directory == "..":
+        if current_directory.parent is None:
+            raise Exception("ROOT cannot go a directory up")
         return current_directory.parent
     try:
         return next(

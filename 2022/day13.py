@@ -109,7 +109,7 @@ assert compare_pairs(test_pairs) == 13  # noqa: PLR2004
 print(compare_pairs(pairs))
 
 
-def sort_packages(pairs: Iterable[tuple[list]]) -> list[list]:
+def sort_packages(pairs: Iterable[tuple[list, ...]]) -> list[list]:
     # first flatten packages
     packages = (package for pair in pairs for package in pair)
     # sort packages
@@ -120,7 +120,7 @@ def find_divider_packets(package: list) -> bool:
     return package in ([[2]], [[6]])
 
 
-def decoder_key(pairs: tuple[tuple[list, ...]]) -> int:
+def decoder_key(pairs: tuple[tuple[list, ...], ...]) -> int:
     pairs = (*pairs, ([[2]], [[6]]))
     packages = sort_packages(pairs)
     # pprint(packages)
