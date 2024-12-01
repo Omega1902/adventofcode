@@ -152,8 +152,8 @@ sensors = tuple(parse_data(get_data("input_day15.txt")))
 test_grid = Grid(test_sensors)
 grid = Grid(sensors)
 
-assert test_grid.get_no_beacon(10) == 26  # noqa: PLR2004
+assert test_grid.get_no_beacon(10) == 26
 print(grid.get_no_beacon(2_000_000))  # 4033885 is to low
 
-assert test_grid.find_tuning_frequency(0, 20) == 56_000_011  # noqa: PLR2004
+assert test_grid.find_tuning_frequency(0, 20) == 56_000_011
 print(grid.find_tuning_frequency(0, 4_000_000))

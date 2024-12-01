@@ -105,7 +105,7 @@ def compare_pairs(pairs: Iterable[tuple[list, ...]]) -> int:
 test_pairs = tuple(parse_data(test_data))
 pairs = tuple(parse_data(get_data("input_day13.txt")))
 
-assert compare_pairs(test_pairs) == 13  # noqa: PLR2004
+assert compare_pairs(test_pairs) == 13
 print(compare_pairs(pairs))
 
 
@@ -128,5 +128,5 @@ def decoder_key(pairs: tuple[tuple[list, ...], ...]) -> int:
     return reduce(lambda x, y: x * y, indexes)
 
 
-assert decoder_key(test_pairs) == 140  # noqa: PLR2004
+assert decoder_key(test_pairs) == 140
 print(decoder_key(pairs))  # 11106053088 to high, 0 is not the right answer

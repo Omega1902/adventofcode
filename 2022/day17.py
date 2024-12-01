@@ -53,7 +53,7 @@ class Cave:
             self.grid[-1] == self.empty_line and self.grid[-2] == self.empty_line and self.grid[-3] == self.empty_line
         ):
             self.grid.append(self.empty_line.copy())
-        if len(self.grid) < 4:  # noqa: PLR2004
+        if len(self.grid) < 4:
             return
         while self.grid[-4] == self.empty_line:
             self.grid.pop()
@@ -140,7 +140,7 @@ def get_cave_height(movements: str, rocks_count: int = 2022, cave_width: int = 7
     return cave.get_height()
 
 
-assert get_cave_height(get_data("input_day17_test.txt").strip()) == 3068  # noqa: PLR2004
+assert get_cave_height(get_data("input_day17_test.txt").strip()) == 3068
 print(get_cave_height(get_data("input_day17.txt").strip()))
-assert get_cave_height(get_data("input_day17_test.txt").strip(), 1_000_000_000_000) == 1514285714288  # noqa: PLR2004
+assert get_cave_height(get_data("input_day17_test.txt").strip(), 1_000_000_000_000) == 1514285714288
 print(get_cave_height(get_data("input_day17.txt").strip(), 1_000_000_000_000))

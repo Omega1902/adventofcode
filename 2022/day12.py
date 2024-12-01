@@ -153,8 +153,8 @@ def find_shortest(stop: Coord, matrix: Matrix) -> int:
 test_start, test_stop, test_matrix = parse_data(test_data)
 start, stop, matrix = parse_data(get_data("input_day12.txt"))
 
-assert dijkstra(test_start, test_stop, test_matrix) == 31  # noqa: PLR2004
+assert dijkstra(test_start, test_stop, test_matrix) == 31
 print(dijkstra(start, stop, matrix))
 
-assert find_shortest(test_stop, test_matrix) == 29  # noqa: PLR2004
+assert find_shortest(test_stop, test_matrix) == 29
 print(find_shortest(stop, matrix))

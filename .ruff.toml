@@ -32,6 +32,9 @@ extend-select = ["W", "I", "UP", "YTT", "S", "B", "A", "C4", "T10", "EXE", "LOG"
 # I want to use lambdas
 ignore = ["E731", "S101"]
 
+[lint.pylint]
+allow-magic-value-types = ["str", "bytes", "int"]
+
 [format]
 # Like Black, use double quotes for strings.
 quote-style = "double"
