@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from functools import cmp_to_key, reduce
-from typing import Iterable
 
 from utils import get_data
 
@@ -81,7 +81,7 @@ def parse_data(data: str) -> Iterable[tuple[list, ...]]:
 
 
 def right_order(left: list, right: list) -> int:
-    for left_item, right_item in zip(left, right):
+    for left_item, right_item in zip(left, right, strict=False):
         if isinstance(left_item, int) and isinstance(right_item, int):
             if left_item > right_item:
                 return -1

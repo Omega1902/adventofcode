@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from functools import reduce
-from typing import Callable, ClassVar
+from typing import ClassVar
 
 from tqdm import tqdm, trange
 

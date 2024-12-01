@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-tqdm = "*"
+tqdm = "==4.67.1"
 
 [dev-packages]
 pre-commit = "==4.0.1"
-ruff = "==0.7.0"
+ruff = "==0.8.1"
 pyright = "==1.1.385"

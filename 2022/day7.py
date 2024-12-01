@@ -7,7 +7,7 @@ lines = get_lines("input_day7.txt")
 
 class Directory:
     def __init__(
-        self, parent: Optional["Directory"], name: str, children: Optional[list[Union["Directory", "File"]]] = None
+        self, parent: Optional["Directory"], name: str, children: list[Union["Directory", "File"]] | None = None
     ):
         self.parent = parent
         self.name = name
@@ -66,7 +66,7 @@ for line in lines:
         current_directory.children.append(new_file)
 
 
-def find_directories_by_size(current_directory: Directory, threshold: Optional[int] = 100000):
+def find_directories_by_size(current_directory: Directory, threshold: int | None = 100000):
     result = []
     if threshold is None or current_directory.get_size() <= threshold:
         result.append(current_directory)

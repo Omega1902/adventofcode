@@ -75,7 +75,9 @@ print(prio_sum)
 prio_sum = 0
 backpacks = [set(line) for line in lines if line]
 length = len(backpacks)
-for b1, b2, b3 in zip(backpacks[slice(0, length, 3)], backpacks[slice(1, length, 3)], backpacks[slice(2, length, 3)]):
+for b1, b2, b3 in zip(
+    backpacks[slice(0, length, 3)], backpacks[slice(1, length, 3)], backpacks[slice(2, length, 3)], strict=False
+):
     common_item = b1.intersection(b2).intersection(b3)
     assert len(common_item) == 1
     item = common_item.pop()

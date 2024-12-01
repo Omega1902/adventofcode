@@ -1,5 +1,5 @@
 line-length = 120
-target-version = "py39"
+target-version = "py311"
 extend-exclude = [".vscode", "htmlcov"]
 fix = true
 
@@ -7,19 +7,28 @@ fix = true
 # On top of the default `select` (E, F), enable:
 # Warnings of pycodestyles (W)
 # isort (I)
+# pyupgrade (UP)
+# flake8-2020 (YTT)
 # flake8-bandit (S)
 # flake8-bugbear (B)
 # flake8-builtins (A)
 # flake8-comprehensions (C4)
+# flake8-debugger (T10)
+# flake8-executable (EXE)
 # flake8-logging (LOG)
 # flake8-logging-format (G)
+# flake8-pie (PIE)
 # flake8-raise (RSE)
 # flake8-return (RET)
 # flake8-siplify (SIM)
+# flake8-unused-arguments (ARG)
+# flake8-use-pathlib (PTH)
 # pylint (PL)
+# flynt (FLY)
 # perflint (PERF)
+# refurb (FURB)
 # Ruff-specific rules (RUF)
-extend-select = ["W", "I", "S", "B", "A", "C4", "LOG", "G", "RSE", "RET", "SIM", "PL", "PERF", "RUF"]
+extend-select = ["W", "I", "UP", "YTT", "S", "B", "A", "C4", "T10", "EXE", "LOG", "G", "PIE", "RSE", "RET", "SIM", "ARG", "PTH", "PL", "FLY", "PERF", "FURB", "RUF"]
 # I want to use lambdas
 ignore = ["E731", "S101"]
 
