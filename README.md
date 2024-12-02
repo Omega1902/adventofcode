@@ -5,13 +5,14 @@
 ## How to use
 
 1. Check out code
-2. pipenv install
-3. pipenv shell
-4. Run file (e.g. python 2022/day1.py)
+2. `pipenv install`
+3. `pipenv shell`
+4. Run file (e.g. `python 2022/day1.py`)
 
 ## How to develop
 
 1. Check out code
-2. pipenv install -d
-3. pipenv shell
-4. pre-commit install
+2. `pipenv install -d`
+3. `pipenv shell`
+4. `pre-commit install`
+5. Run tests: `python -m unittest discover -s 2024`

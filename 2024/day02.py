@@ -39,17 +39,14 @@ def _level_try_direction(level: list, direction: int) -> bool:
         sub = item1 - item2
         if abs(sub) < 1 or abs(sub) > 3:
             if item is LevelRemover.HasRemoved:
-                print(str(level) + " is unsafe")
                 return False
             item = LevelRemover.IsRemoving
             previous_value = item1
         if (sub > 0 and direction < 0) or (sub < 0 and direction > 0):
             if item is LevelRemover.HasRemoved:
-                print(str(level) + " is unsafe")
                 return False
             item = LevelRemover.IsRemoving
             previous_value = item1
-    print(str(level) + " is safe")
     return True
 
 
@@ -72,9 +69,7 @@ def challenge2(filename: str) -> int:
     return sum(1 for level in levels if level_is_safe2(level))
 
 
-assert challenge1("data/test_day02.txt") == 2
 print(challenge1("data/input_day02.txt"))
 
 
-assert challenge2("data/test_day02.txt") == 4
 print(challenge2("data/input_day02.txt"))
