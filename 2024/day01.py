@@ -35,6 +35,7 @@ def challenge2(filename: str) -> int:
     return result
 
 
-print(challenge1("data/input_day01.txt"))
+if __name__ == "__main__":
+    print(challenge1("data/input_day01.txt"))
 
-print(challenge2("data/input_day01.txt"))
+    print(challenge2("data/input_day01.txt"))
