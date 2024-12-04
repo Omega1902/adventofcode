@@ -1,10 +1,8 @@
 import re
 
-from utils import get_lines
 
-
-def read_lists(filename: str) -> tuple[list[int], list[int]]:
-    lines = get_lines(filename)
+def read_lists(data: str) -> tuple[list[int], list[int]]:
+    lines = data.strip().splitlines()
     l1, l2 = [], []
     for line in lines:
         res = re.findall(r"(\d+) +(\d+)", line)
@@ -22,20 +20,14 @@ def calc_lists_diff(list1: list[int], list2: list[int]) -> int:
     return result
 
 
-def challenge1(filename: str) -> int:
-    l1, l2 = read_lists(filename)
+def challenge1(data: str) -> int:
+    l1, l2 = read_lists(data)
     return calc_lists_diff(l1, l2)
 
 
-def challenge2(filename: str) -> int:
-    l1, l2 = read_lists(filename)
+def challenge2(data: str) -> int:
+    l1, l2 = read_lists(data)
     result = 0
     for e1 in l1:
         result += e1 * l2.count(e1)
     return result
-
-
-if __name__ == "__main__":
-    print(challenge1("data/input_day01.txt"))
-
-    print(challenge2("data/input_day01.txt"))
