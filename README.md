@@ -7,15 +7,21 @@
 1. Check out code
 2. `pipenv install`
 3. `pipenv shell`
-4. Run file of 2022: `python 2022/day1.py` (for day 1)
-5. Since 2024 this is also supported:
-    1. `./main.py 2024 1` for day 1 of 2024
+4. Run:
+    1. `./main.py 2022 2` for day 2 of 2022
     2. `./main.py` for all days on the default year
 
 ## How to develop
 
-1. Check out cod on the default yeare
+1. Check out code
 2. `pipenv install -d`
 3. `pipenv shell`
 4. `pre-commit install`
-5. Run tests (since 2024): `python -m unittest discover -s 2024`
+5. Run tests: `python -m unittest discover -s 2024`
+
+
+## Download data
+
+1. Install advent-of-code-data (included in `pipenv install -d`)
+2. export Session token from Browser: `export AOC_SESSION=cafef00db01dfaceba5eba11deadbeef`
+3. `aocd 2 2022 > data/2022/day13.txt`

@@ -1,9 +1,5 @@
 from typing import Optional, Union
 
-from utils import get_lines
-
-lines = get_lines("input_day7.txt")
-
 
 class Directory:
     def __init__(
@@ -27,13 +23,13 @@ class File:
         return self.size
 
 
-def change_directory(line: str, current_directory: Directory) -> Directory:
+def change_directory(line: str, current_directory: Directory, root: Directory) -> Directory:
     directory = line[5:]
     if directory == "/":
-        return ROOT
+        return root
     if directory == "..":
         if current_directory.parent is None:
-            raise Exception("ROOT cannot go a directory up")
+            raise Exception("root cannot go a directory up")
         return current_directory.parent
     try:
         return next(
@@ -48,24 +44,6 @@ def change_directory(line: str, current_directory: Directory) -> Directory:
         raise
 
 
-ROOT = Directory(None, "root")
-current_directory = ROOT
-
-in_ls_mode = False
-for line in lines:
-    if line.startswith("$ cd"):
-        current_directory = change_directory(line, current_directory)
-    elif line == "$ ls":
-        continue
-    elif line.startswith("dir"):
-        new_directory = Directory(current_directory, line[4:])
-        current_directory.children.append(new_directory)
-    else:
-        size, name = line.split(" ")
-        new_file = File(current_directory, name, int(size))
-        current_directory.children.append(new_file)
-
-
 def find_directories_by_size(current_directory: Directory, threshold: int | None = 100000):
     result = []
     if threshold is None or current_directory.get_size() <= threshold:
@@ -76,18 +54,39 @@ def find_directories_by_size(current_directory: Directory, threshold: int | None
     return result
 
 
-r1 = find_directories_by_size(ROOT)
-r1 = sum(r.get_size() for r in r1)
-print(r1)
+def parse_filesystems(data: str) -> Directory:
+    root = Directory(None, "root")
+    current_directory = root
+
+    for line in data.splitlines():
+        if line.startswith("$ cd"):
+            current_directory = change_directory(line, current_directory, root)
+        elif line == "$ ls":
+            continue
+        elif line.startswith("dir"):
+            new_directory = Directory(current_directory, line[4:])
+            current_directory.children.append(new_directory)
+        else:
+            size, name = line.split(" ")
+            new_file = File(current_directory, name, int(size))
+            current_directory.children.append(new_file)
+    return root
 
 
-total_size = 70_000_000
-free_space_needed = 30_000_000
-current_size = ROOT.get_size()
-current_free = total_size - current_size
-to_delete = free_space_needed - current_free
-print(f"Currently free: {current_free}, Need {to_delete}")
-r2 = find_directories_by_size(ROOT, None)
-r2 = [child for child in r2 if child.get_size() > to_delete]
-r2 = sorted(r2, key=lambda d: d.get_size())
-print(r2[0].get_size())
+def challenge1(data: str) -> int:
+    root = parse_filesystems(data)
+    r1 = find_directories_by_size(root)
+    return sum(r.get_size() for r in r1)
+
+
+def challenge2(data: str) -> int:
+    root = parse_filesystems(data)
+    total_size = 70_000_000
+    free_space_needed = 30_000_000
+    current_size = root.get_size()
+    current_free = total_size - current_size
+    to_delete = free_space_needed - current_free
+    r2 = find_directories_by_size(root, None)
+    r2 = [child for child in r2 if child.get_size() > to_delete]
+    r2 = sorted(r2, key=lambda d: d.get_size())
+    return r2[0].get_size()

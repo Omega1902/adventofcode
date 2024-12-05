@@ -1,7 +1,6 @@
 from typing import Final, Literal, NamedTuple
 
 import tqdm
-from utils import get_data
 
 _ROCKS = """####
 
@@ -140,7 +139,9 @@ def get_cave_height(movements: str, rocks_count: int = 2022, cave_width: int = 7
     return cave.get_height()
 
 
-assert get_cave_height(get_data("input_day17_test.txt").strip()) == 3068
-print(get_cave_height(get_data("input_day17.txt").strip()))
-assert get_cave_height(get_data("input_day17_test.txt").strip(), 1_000_000_000_000) == 1514285714288
-print(get_cave_height(get_data("input_day17.txt").strip(), 1_000_000_000_000))
+def challenge1(data: str) -> int:
+    return get_cave_height(data)
+
+
+def challenge2_takes_too_long(data: str) -> int:
+    return get_cave_height(data, 1_000_000_000_000)  # takes to long

@@ -1,6 +1,3 @@
-from utils import get_lines
-
-
 class Rock:
     points = 1
 
@@ -77,33 +74,36 @@ def rock_paper_scissors_factory(item: str) -> Rock | Paper | Scissors:
     raise ValueError("You did not choose a proper character for Rock, Paper or Scissors")
 
 
-lines = get_lines("input_day2.txt")
+def challenge1(data: str) -> int:
+    lines = data.splitlines()
+    points = 0
+    for line in lines:
+        if line == "":
+            continue
+        other, mine = line.split(" ")
+        other = rock_paper_scissors_factory(other)
+        mine = rock_paper_scissors_factory(mine)
+        points += mine.points
+        points += mine.win_points(other)
+    return points
 
-points = 0
-for line in lines:
-    if line == "":
-        continue
-    other, mine = line.split(" ")
-    other = rock_paper_scissors_factory(other)
-    mine = rock_paper_scissors_factory(mine)
-    points += mine.points
-    points += mine.win_points(other)
-print(points)
 
-points = 0
-for line in lines:
-    if line == "":
-        continue
-    other, mine = line.split(" ")
-    other = rock_paper_scissors_factory(other)
-    if mine == "X":
-        mine = other.wins_against()
-    elif mine == "Y":
-        mine = other
-    elif mine == "Z":
-        mine = other.looses_against()
-    else:
-        raise ValueError("Should have been X, Y or Z")
-    points += mine.points
-    points += mine.win_points(other)
-print(points)
+def challenge2(data: str) -> int:
+    lines = data.splitlines()
+    points = 0
+    for line in lines:
+        if line == "":
+            continue
+        other, mine = line.split(" ")
+        other = rock_paper_scissors_factory(other)
+        if mine == "X":
+            mine = other.wins_against()
+        elif mine == "Y":
+            mine = other
+        elif mine == "Z":
+            mine = other.looses_against()
+        else:
+            raise ValueError("Should have been X, Y or Z")
+        points += mine.points
+        points += mine.win_points(other)
+    return points

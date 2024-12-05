@@ -1,22 +1,5 @@
 from collections.abc import Callable, Iterable
 
-from utils import get_data
-
-data = get_data("input_day18.txt")
-test_data = """2,2,2
-1,2,2
-3,2,2
-2,1,2
-2,3,2
-2,2,1
-2,2,3
-2,2,4
-2,2,6
-1,2,5
-3,2,5
-2,1,5
-2,3,5"""
-
 Cube = tuple[int, int, int]
 Dims = tuple[int, int, int, int, int, int]
 
@@ -69,7 +52,6 @@ def is_air(cube: Cube, cubes: set[Cube], dims, air_bubble: set[Cube] | None = No
         raise
     if result and is_root:
         air.update(air_bubble)
-        # print(f"bubble size {len(air_bubble)}")
     return result
 
 
@@ -87,11 +69,11 @@ def get_neighbours(cube: Cube) -> Iterable[Cube]:
     yield (x, y, z - 1)
 
 
-def parts(cubes: set[Cube], strategy: Callable[[Cube, set[Cube], Dims], bool], dims: Dims) -> None:
+def parts(cubes: set[Cube], strategy: Callable[[Cube, set[Cube], Dims], bool], dims: Dims) -> int:
     exposed_surfaces = (
         1 if strategy(neighbour, cubes, dims) else 0 for cube in cubes for neighbour in get_neighbours(cube)
     )
-    print(sum(exposed_surfaces))
+    return sum(exposed_surfaces)
 
 
 def get_dims(cubes: set[Cube]) -> Dims:
@@ -104,16 +86,21 @@ def get_dims(cubes: set[Cube]) -> Dims:
     return x_min, x_max, y_min, y_max, z_min, z_max
 
 
-cubes = parse_data(data)
-dims = get_dims(cubes)
-print(dims)
 air = set()
 
-# part1
-parts(cubes, is_not_lava, dims)
 
-# part2
-parts(cubes, is_water, dims)
-# 3246 is to high for part2
-# 3236 is to high for part2
-# 2005 is to low for part2
+def challenge1(data: str) -> int:
+    # no longer correct
+    cubes = parse_data(data)
+    dims = get_dims(cubes)
+    return parts(cubes, is_not_lava, dims)
+
+
+def challenge2(data: str) -> int:
+    # not correct
+    cubes = parse_data(data)
+    dims = get_dims(cubes)
+    return parts(cubes, is_water, dims)
+    # 3246 is to high for part2
+    # 3236 is to high for part2
+    # 2005 is to low for part2

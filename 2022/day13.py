@@ -1,32 +1,6 @@
 from collections.abc import Iterable
 from functools import cmp_to_key, reduce
 
-from utils import get_data
-
-test_data = """[1,1,3,1,1]
-[1,1,5,1,1]
-
-[[1],[2,3,4]]
-[[1],4]
-
-[9]
-[[8,7,6]]
-
-[[4,4],4,4]
-[[4,4],4,4,4]
-
-[7,7,7,7]
-[7,7,7]
-
-[]
-[3]
-
-[[[]]]
-[[]]
-
-[1,[2,[3,[4,[5,6,7]]]],8,9]
-[1,[2,[3,[4,[5,6,0]]]],8,9]"""
-
 
 def find_matching_bracket(line: str, start: int = 0) -> int:
     bracket_depth = 0
@@ -102,11 +76,9 @@ def compare_pairs(pairs: Iterable[tuple[list, ...]]) -> int:
     return sum(i for i, pair in enumerate(pairs, 1) if right_order(*pair) > 0)
 
 
-test_pairs = tuple(parse_data(test_data))
-pairs = tuple(parse_data(get_data("input_day13.txt")))
-
-assert compare_pairs(test_pairs) == 13
-print(compare_pairs(pairs))
+def challenge1(data: str) -> int:
+    pairs = tuple(parse_data(data))
+    return compare_pairs(pairs)
 
 
 def sort_packages(pairs: Iterable[tuple[list, ...]]) -> list[list]:
@@ -128,5 +100,6 @@ def decoder_key(pairs: tuple[tuple[list, ...], ...]) -> int:
     return reduce(lambda x, y: x * y, indexes)
 
 
-assert decoder_key(test_pairs) == 140
-print(decoder_key(pairs))  # 11106053088 to high, 0 is not the right answer
+def challenge2(data: str) -> int:
+    pairs = tuple(parse_data(data))
+    return decoder_key(pairs)

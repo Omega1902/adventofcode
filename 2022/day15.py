@@ -2,22 +2,6 @@ import re
 from collections.abc import Collection
 
 from tqdm import trange
-from utils import get_data
-
-test_data = """Sensor at x=2, y=18: closest beacon is at x=-2, y=15
-Sensor at x=9, y=16: closest beacon is at x=10, y=16
-Sensor at x=13, y=2: closest beacon is at x=15, y=3
-Sensor at x=12, y=14: closest beacon is at x=10, y=16
-Sensor at x=10, y=20: closest beacon is at x=10, y=16
-Sensor at x=14, y=17: closest beacon is at x=10, y=16
-Sensor at x=8, y=7: closest beacon is at x=2, y=10
-Sensor at x=2, y=0: closest beacon is at x=2, y=10
-Sensor at x=0, y=11: closest beacon is at x=2, y=10
-Sensor at x=20, y=14: closest beacon is at x=25, y=17
-Sensor at x=17, y=20: closest beacon is at x=21, y=22
-Sensor at x=16, y=7: closest beacon is at x=15, y=3
-Sensor at x=14, y=3: closest beacon is at x=15, y=3
-Sensor at x=20, y=1: closest beacon is at x=15, y=3"""
 
 
 def parse_line(data: str):
@@ -82,7 +66,6 @@ class Grid:
         self.x_max = max(grid_item.x for grid_item in self.grid_items)
         self.y_min = min(grid_item.y for grid_item in self.grid_items)
         self.y_max = max(grid_item.y for grid_item in self.grid_items)
-        print(f"Matrix x {self.x_min} to {self.x_max} and y {self.y_min} to {self.y_max}")
         self.sort_step = 100
         self.sort_sensors()
 
@@ -146,14 +129,13 @@ class Grid:
         raise ValueError("No distress beacon!")
 
 
-test_sensors = tuple(parse_data(test_data))
-sensors = tuple(parse_data(get_data("input_day15.txt")))
+def challenge1(data: str, param: int = 2_000_000) -> int:
+    sensors = tuple(parse_data(data))
+    grid = Grid(sensors)
+    return grid.get_no_beacon(param)
 
-test_grid = Grid(test_sensors)
-grid = Grid(sensors)
 
-assert test_grid.get_no_beacon(10) == 26
-print(grid.get_no_beacon(2_000_000))  # 4033885 is to low
-
-assert test_grid.find_tuning_frequency(0, 20) == 56_000_011
-print(grid.find_tuning_frequency(0, 4_000_000))
+def challenge2(data: str, param: int = 4_000_000) -> int:
+    sensors = tuple(parse_data(data))
+    grid = Grid(sensors)
+    return grid.find_tuning_frequency(0, param)
