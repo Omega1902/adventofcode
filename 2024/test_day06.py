@@ -16,7 +16,7 @@ test_input: str = """
 """.strip()
 
 
-class TestDay05(unittest.TestCase):
+class TestDay06(unittest.TestCase):
     def test_challenge1(self):
         self.assertEqual(challenge1(test_input), 41)
 

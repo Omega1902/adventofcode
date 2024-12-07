@@ -1,3 +1,4 @@
+import operator
 from collections.abc import Callable
 from functools import reduce
 from typing import ClassVar
@@ -22,7 +23,7 @@ class Monkey:
         for item in self.items:
             cur_item = self.operation(item)
             # cur_item = cur_item // 3
-            cur_item = cur_item % self.get_kgv()
+            cur_item %= self.get_kgv()
             index = self.monkey_true if cur_item % self.test_param == 0 else self.monkey_false
             Monkey.monkeys[index].items.append(cur_item)
         self.items_inspected += len(self.items)
@@ -69,7 +70,7 @@ class Monkey:
     def get_kgv(cls):
         if cls._kgv is None:
             primes = {x.test_param for x in cls.monkeys}
-            cls._kgv = reduce(lambda x, y: x * y, primes)
+            cls._kgv = reduce(operator.mul, primes)
         return cls._kgv
 
 

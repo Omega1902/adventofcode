@@ -1,3 +1,4 @@
+import operator
 from collections.abc import Collection, Iterable
 from functools import reduce
 from itertools import tee
@@ -59,7 +60,7 @@ class Canvas:
         self.sand_counter = 0
         self.sand = (500, 0)
         self.canvas = reduce(
-            lambda x, y: x + y, ([["."] * (self.x_max - self.x_min)] for _ in range(self.y_max - self.y_min + 1))
+            operator.add, ([["."] * (self.x_max - self.x_min)] for _ in range(self.y_max - self.y_min + 1))
         )
         self.draw_point(self.sand, "+")
         self.draw_paths(paths)

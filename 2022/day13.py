@@ -1,3 +1,4 @@
+import operator
 from collections.abc import Iterable
 from functools import cmp_to_key, reduce
 
@@ -97,7 +98,7 @@ def decoder_key(pairs: tuple[tuple[list, ...], ...]) -> int:
     packages = sort_packages(pairs)
     # pprint(packages)
     indexes = (i for i, package in enumerate(packages, 1) if find_divider_packets(package))
-    return reduce(lambda x, y: x * y, indexes)
+    return reduce(operator.mul, indexes)
 
 
 def challenge2(data: str) -> int:
