@@ -85,7 +85,7 @@ def find_obstruction_places(grid) -> int:
     possible_obstruction_points = [
         Point(x, y) for x in range(len(grid[0])) for y in range(len(grid)) if grid[y][x] not in "#^v<>"
     ]
-    for p in tqdm(possible_obstruction_points):
+    for p in tqdm(possible_obstruction_points, delay=0.1):
         grid_copy = [row.copy() for row in grid]
         grid_copy[p.y][p.x] = "#"
         if loops(grid_copy, guard, max_point):

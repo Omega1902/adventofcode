@@ -112,7 +112,7 @@ class Cave:
 def get_cave_height(movements: str, rocks_count: int = 2022, cave_width: int = 7) -> int:
     movements_index = 0
     cave = Cave(cave_width)
-    for i in tqdm.trange(rocks_count):
+    for i in tqdm.trange(rocks_count, delay=0.1):
         cave.add_rock(ROCKS[i % len(ROCKS)])
         while cave.rock_in_motion():
             movement: Movement = movements[movements_index % len(movements)]  # type: ignore

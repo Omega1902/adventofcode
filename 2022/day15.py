@@ -122,7 +122,7 @@ class Grid:
         return (x, index) if index < range_max else None
 
     def find_tuning_frequency(self, range_min: int, range_max: int) -> int:
-        for x in trange(range_min, range_max + 1):
+        for x in trange(range_min, range_max + 1, delay=0.1):
             sensors = self.get_sorted_sensors(x)
             if (distress_beacon := self.find_distress_beacon(x, sensors, range_min, range_max)) is not None:
                 return distress_beacon[0] * 4_000_000 + distress_beacon[1]
