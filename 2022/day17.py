@@ -1,18 +1,15 @@
-from typing import Final, Literal, NamedTuple
+from typing import Final, Literal
 
 import tqdm
+
+from utils import Grid, GridList, GridTuple, Point
 
 _ROCKS = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"]
 
 
-ROCKS: Final[tuple[list[list[str]], ...]] = tuple(
-    [list(rock_line) for rock_line in rocks] for rocks in (rocks.splitlines() for rocks in _ROCKS)
+ROCKS: Final[tuple[GridTuple[str], ...]] = tuple(
+    tuple(tuple(rock_line) for rock_line in rocks) for rocks in (rocks.splitlines() for rocks in _ROCKS)
 )
-
-
-class Coord(NamedTuple):
-    x: int
-    y: int
 
 
 Movement = Literal["<", ">"]
@@ -22,8 +19,8 @@ class Cave:
     def __init__(self, width: int) -> None:
         self.width: Final = width
         self.empty_line: Final = ["."] * width
-        self.grid: list[list[str]] = [self.empty_line.copy(), self.empty_line.copy(), self.empty_line.copy()]
-        self.rocks_in_motion: list[Coord] = []
+        self.grid: GridList[str] = [self.empty_line.copy(), self.empty_line.copy(), self.empty_line.copy()]
+        self.rocks_in_motion: list[Point] = []
 
     def get_height(self) -> int:
         for i in range(len(self.grid) - 1, -1, -1):
@@ -41,13 +38,13 @@ class Cave:
         while self.grid[-4] == self.empty_line:
             self.grid.pop()
 
-    def add_rock(self, rock: list[list[str]]) -> None:
+    def add_rock(self, rock: Grid[str]) -> None:
         self._ensure_empty_lines()
         for rock_line in reversed(rock):
             line_to_add = [".", "."]
             for i, rock_item in enumerate(rock_line):
                 if rock_item == "#":
-                    self.rocks_in_motion.append(Coord(i + 2, len(self.grid)))
+                    self.rocks_in_motion.append(Point(i + 2, len(self.grid)))
                     line_to_add.append("@")
                 else:
                     line_to_add.append(rock_item)
@@ -60,23 +57,23 @@ class Cave:
         # return any("@" in self.grid[i] for i in range(len(self.grid), 0, -1))
         return bool(self.rocks_in_motion)
 
-    def _mark_mul(self, coords: list[Coord], char: str) -> None:
-        for coord in coords:
-            self.grid[coord.y][coord.x] = char
+    def _mark_mul(self, points: list[Point], char: str) -> None:
+        for point in points:
+            self.grid[point.y][point.x] = char
 
-    def _move_if_possible(self, try_coords: list[Coord]) -> bool:
+    def _move_if_possible(self, try_points: list[Point]) -> bool:
         can_move = all(
-            try_coord.x >= 0
-            and try_coord.x < self.width
-            and try_coord.y >= 0
-            and self.grid[try_coord.y][try_coord.x] != "#"
-            for try_coord in try_coords
+            try_Point.x >= 0
+            and try_Point.x < self.width
+            and try_Point.y >= 0
+            and self.grid[try_Point.y][try_Point.x] != "#"
+            for try_Point in try_points
         )
         if can_move:
             self._mark_mul(self.rocks_in_motion, ".")
-            self._mark_mul(try_coords, "@")
+            self._mark_mul(try_points, "@")
 
-            self.rocks_in_motion = try_coords
+            self.rocks_in_motion = try_points
         return can_move
 
     def fixate_rocks_in_motion(self) -> None:
@@ -84,15 +81,15 @@ class Cave:
         self.rocks_in_motion = []
 
     def rock_down(self) -> None:
-        try_coords = [Coord(rock.x, rock.y - 1) for rock in self.rocks_in_motion]
-        can_fall = self._move_if_possible(try_coords)
+        try_points = [Point(rock.x, rock.y - 1) for rock in self.rocks_in_motion]
+        can_fall = self._move_if_possible(try_points)
         if not can_fall:
             self.fixate_rocks_in_motion()
 
     def move(self, movement: Movement) -> None:
         to_add = 1 if movement == ">" else -1
-        try_coords = [Coord(rock.x + to_add, rock.y) for rock in self.rocks_in_motion]
-        self._move_if_possible(try_coords)
+        try_points = [Point(rock.x + to_add, rock.y) for rock in self.rocks_in_motion]
+        self._move_if_possible(try_points)
 
     def __str__(self) -> str:
         return (
