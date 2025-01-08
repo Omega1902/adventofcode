@@ -1,6 +1,6 @@
 from tqdm import tqdm
 
-from utils import GridList, Point, parse_to_grid_list_str
+from utils import GridBounds, GridList, Point, parse_to_grid_list_str
 
 
 def get_next_point(grid: GridList[str], point: Point) -> Point:
@@ -33,8 +33,13 @@ def turn_right(grid: GridList[str], point: Point) -> None:
 
 def find_distinct_visits(grid: GridList[str]) -> int:
     guard = find_guard(grid)
-    max_point = Point(len(grid[0]) - 1, len(grid) - 1)
-    while guard.y > 0 and guard.x > 0 and guard.y < max_point.y and guard.x < max_point.x:
+    grid_bounds = GridBounds.from_grid(grid)
+    while (
+        guard.y > grid_bounds.ymin
+        and guard.x > grid_bounds.xmin
+        and guard.y < grid_bounds.ymax
+        and guard.x < grid_bounds.xmax
+    ):
         new_position = get_next_point(grid, guard)
         while grid[new_position.y][new_position.x] == "#":
             turn_right(grid, guard)
@@ -54,10 +59,15 @@ def find_guard(mal: GridList[str]) -> Point:
     raise ValueError("No guard found")
 
 
-def loops(grid: GridList[str], guard: Point, max_point: Point) -> bool:
+def loops(grid: GridList[str], guard: Point, grid_bounds: GridBounds) -> bool:
     visited: dict[Point, tuple[str, ...]] = {}
     visited[guard] = (grid[guard.y][guard.x],)
-    while guard.y > 0 and guard.x > 0 and guard.y < max_point.y and guard.x < max_point.x:
+    while (
+        guard.y > grid_bounds.ymin
+        and guard.x > grid_bounds.xmin
+        and guard.y < grid_bounds.ymax
+        and guard.x < grid_bounds.xmax
+    ):
         new_position = get_next_point(grid, guard)
         while grid[new_position.y][new_position.x] == "#":
             turn_right(grid, guard)
@@ -73,7 +83,7 @@ def loops(grid: GridList[str], guard: Point, max_point: Point) -> bool:
 
 def find_obstruction_places(grid) -> int:
     guard = find_guard(grid)
-    max_point = Point(len(grid[0]) - 1, len(grid) - 1)
+    grid_bounds = GridBounds.from_grid(grid)
     result = 0
     possible_obstruction_points = [
         Point(x, y) for x in range(len(grid[0])) for y in range(len(grid)) if grid[y][x] not in "#^v<>"
@@ -81,7 +91,7 @@ def find_obstruction_places(grid) -> int:
     for p in tqdm(possible_obstruction_points, delay=0.1):
         grid_copy = [row.copy() for row in grid]
         grid_copy[p.y][p.x] = "#"
-        if loops(grid_copy, guard, max_point):
+        if loops(grid_copy, guard, grid_bounds):
             result += 1
     return result
 

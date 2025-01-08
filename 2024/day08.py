@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from utils import GridTuple, Point, parse_to_grid_tuple_str
+from utils import GridBounds, GridTuple, Point, parse_to_grid_tuple_str
 
 
 def get_antennas(grid: GridTuple[str]) -> set[str]:
@@ -20,12 +20,12 @@ def find_antenna_positions(grid: GridTuple[str], antenna: str) -> set[Point]:
     return antenna_positions
 
 
-def _find_antinodes(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_MAX_Y: int) -> set[Point]:
+def _find_antinodes(grid: GridTuple[str], antenna: str, grid_bounds: GridBounds) -> set[Point]:
     antinodes = set()
 
     def add_antinode(x: int, y: int):
-        if 0 <= x <= GRID_MAX_X and 0 <= y <= GRID_MAX_Y:
-            antinodes.add(Point(x, y))
+        if new_point := grid_bounds.create_point(x, y):
+            antinodes.add(new_point)
 
     antenna_positions = find_antenna_positions(grid, antenna)
     for antenna1, antenna2 in combinations(antenna_positions, 2):
@@ -38,18 +38,14 @@ def _find_antinodes(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_MA
 
 def find_antinodes(grid: GridTuple[str], antennas: set[str]) -> set[Point]:
     antinodes = set()
-    GRID_MAX_X = len(grid[0]) - 1
-    GRID_MAX_Y = len(grid) - 1
+    grid_bounds = GridBounds.from_grid(grid)
     for antenna in antennas:
-        antinodes.update(_find_antinodes(grid, antenna, GRID_MAX_X, GRID_MAX_Y))
+        antinodes.update(_find_antinodes(grid, antenna, grid_bounds))
     return antinodes
 
 
-def _find_antinodes2(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_MAX_Y: int) -> set[Point]:
+def _find_antinodes2(grid: GridTuple[str], antenna: str, grid_bounds: GridBounds) -> set[Point]:
     antinodes = set()
-
-    def in_bounds(x: int, y: int) -> bool:
-        return 0 <= x <= GRID_MAX_X and 0 <= y <= GRID_MAX_Y
 
     antenna_positions = find_antenna_positions(grid, antenna)
     if len(antenna_positions) > 1:
@@ -60,13 +56,13 @@ def _find_antinodes2(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_M
         diff_y = antenna1.y - antenna2.y
         x = antenna1.x + diff_x
         y = antenna1.y + diff_y
-        while in_bounds(x, y):
+        while grid_bounds.is_inside(x, y):
             antinodes.add(Point(x, y))
             x += diff_x
             y += diff_y
         x = antenna2.x - diff_x
         y = antenna2.y - diff_y
-        while in_bounds(x, y):
+        while grid_bounds.is_inside(x, y):
             antinodes.add(Point(x, y))
             x -= diff_x
             y -= diff_y
@@ -75,10 +71,9 @@ def _find_antinodes2(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_M
 
 def find_antinodes2(grid: GridTuple[str], antennas: set[str]) -> set[Point]:
     antinodes = set()
-    GRID_MAX_X = len(grid[0]) - 1
-    GRID_MAX_Y = len(grid) - 1
+    grid_bounds = GridBounds.from_grid(grid)
     for antenna in antennas:
-        antinodes.update(_find_antinodes2(grid, antenna, GRID_MAX_X, GRID_MAX_Y))
+        antinodes.update(_find_antinodes2(grid, antenna, grid_bounds))
     return antinodes
 
 
