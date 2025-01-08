@@ -3,8 +3,6 @@ from collections.abc import Iterable
 from enum import Enum, auto
 from itertools import pairwise
 
-from utils import get_lines
-
 
 def get_numbers(line: str) -> Iterable[int]:
     return map(int, re.findall(r"\d+", line))
@@ -55,21 +53,15 @@ def level_is_safe2(level: Iterable[int]) -> bool:
     return any(_level_try_direction(level, direction) for direction in (-1, 1)) or level_is_safe(level[1:])
 
 
-def challenge1(filename: str) -> int:
-    lines = get_lines(filename)
+def challenge1(data: str) -> int:
+    lines = data.strip().splitlines()
     levels: Iterable[Iterable[int]] = map(get_numbers, lines)
 
     return sum(1 for level in levels if level_is_safe(level))
 
 
-def challenge2(filename: str) -> int:
-    lines = get_lines(filename)
+def challenge2(data: str) -> int:
+    lines = data.strip().splitlines()
     levels: Iterable[Iterable[int]] = map(get_numbers, lines)
 
     return sum(1 for level in levels if level_is_safe2(level))
-
-
-if __name__ == "__main__":
-    print(challenge1("data/input_day02.txt"))
-
-    print(challenge2("data/input_day02.txt"))

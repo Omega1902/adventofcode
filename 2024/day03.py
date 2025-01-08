@@ -1,8 +1,6 @@
 import re
 from collections.abc import Iterable
 
-from utils import get_data
-
 
 def get_multipliers(data: str) -> Iterable[tuple[int, int]]:
     # python regex to get 1 to 3 digit numbers in mul(2,3)
@@ -23,19 +21,11 @@ def get_multipliers2(data: str) -> Iterable[tuple[int, int]]:
             yield (int(match[1]), int(match[2]))
 
 
-def challenge1(filename: str) -> int:
-    data: str = get_data(filename)
+def challenge1(data: str) -> int:
     multi = get_multipliers(data)
     return sum(x * y for x, y in multi)
 
 
-def challenge2(filename: str) -> int:
-    data: str = get_data(filename)
+def challenge2(data: str) -> int:
     multi = get_multipliers2(data)
     return sum(x * y for x, y in multi)
-
-
-if __name__ == "__main__":
-    print(challenge1("data/input_day03.txt"))
-
-    print(challenge2("data/input_day03.txt"))

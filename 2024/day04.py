@@ -1,6 +1,3 @@
-from utils import get_lines
-
-
 def xmas_bottom_to_top(input_lines: list[str], x: int, y: int, X_MAX: int, Y_MAX: int) -> bool:  # noqa: ARG001
     return x >= 3 and input_lines[x - 1][y] == "M" and input_lines[x - 2][y] == "A" and input_lines[x - 3][y] == "S"
 
@@ -67,7 +64,8 @@ def xmas_to_bottom_right(input_lines: list[str], x: int, y: int, X_MAX: int, Y_M
     )
 
 
-def challenge1(input_lines: list[str]) -> int:
+def challenge1(data: str) -> int:
+    input_lines = data.strip().splitlines()
     X_MAX = len(input_lines) - 1
     Y_MAX = len(input_lines[0]) - 1
     result = 0
@@ -140,7 +138,8 @@ def mas_left_left(input_lines: list[str], x: int, y: int, X_MAX: int, Y_MAX: int
     )
 
 
-def challenge2(input_lines: list[str]) -> int:
+def challenge2(data: str) -> int:
+    input_lines = data.strip().split("\n")
     X_MAX = len(input_lines) - 1
     Y_MAX = len(input_lines[0]) - 1
     result = 0
@@ -155,9 +154,3 @@ def challenge2(input_lines: list[str]) -> int:
                 )
 
     return result
-
-
-if __name__ == "__main__":
-    print(challenge1(get_lines("data/input_day04.txt")))
-
-    print(challenge2(get_lines("data/input_day04.txt")))
