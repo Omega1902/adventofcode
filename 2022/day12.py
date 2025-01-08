@@ -1,14 +1,6 @@
 from collections.abc import Iterable
 from functools import partial
 
-from utils import get_data
-
-test_data = """Sabqponm
-abcryxxl
-accszExk
-acctuvwj
-abdefghi"""
-
 Coord = tuple[int, int]
 Matrix = list[list[int]]
 weights = {
@@ -150,11 +142,11 @@ def find_shortest(stop: Coord, matrix: Matrix) -> int:
     return min(map(my_dijkstra, possible_starting_points))
 
 
-test_start, test_stop, test_matrix = parse_data(test_data)
-start, stop, matrix = parse_data(get_data("input_day12.txt"))
+def challenge1(data: str) -> int:
+    start, stop, matrix = parse_data(data)
+    return dijkstra(start, stop, matrix)
 
-assert dijkstra(test_start, test_stop, test_matrix) == 31
-print(dijkstra(start, stop, matrix))
 
-assert find_shortest(test_stop, test_matrix) == 29
-print(find_shortest(stop, matrix))
+def challenge2(data: str) -> int:
+    _, stop, matrix = parse_data(data)
+    return find_shortest(stop, matrix)

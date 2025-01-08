@@ -1,8 +1,3 @@
-from utils import get_lines
-
-lines = get_lines("input_day9.txt")
-
-
 def move(direction: str, current_position: tuple[int, int]) -> tuple[int, int]:
     if direction == "R":
         return (current_position[0] + 1, current_position[1])
@@ -29,12 +24,12 @@ def tail_new_position(head: tuple[int, int], tail: tuple[int, int]) -> tuple[int
     return (tail[0] + x, tail[1] + y)
 
 
-def day9_part1():
+def challenge1(data: str) -> int:
     head = (0, 0)
     tail = (0, 0)
     positions: set[tuple[int, int]] = {tail}
 
-    for line in lines:
+    for line in data.splitlines():
         direction, amount = line.split(" ")
         for _ in range(int(amount)):
             head_new = move(direction, head)
@@ -42,17 +37,16 @@ def day9_part1():
                 tail = head
                 positions.add(tail)
             head = head_new
-    # print(positions)
-    print(len(positions))
+    return len(positions)
 
 
-def day9_part2():
+def challenge2(data: str) -> int:
     start = (0, 0)
     head = start
     tails: list[tuple[int, int]] = [start, start, start, start, start, start, start, start, start]
     positions: set[tuple[int, int]] = {start}
 
-    for line in lines:
+    for line in data.splitlines():
         direction, amount = line.split(" ")
         for _ in range(int(amount)):
             head_new = move(direction, head)
@@ -66,10 +60,4 @@ def day9_part2():
             for i, new_pos in enumerate(new[1:]):
                 tails[i] = new_pos
             positions.add(tails[-1])
-    # print(positions)
-    print(len(positions))
-
-
-day9_part1()
-
-day9_part2()
+    return len(positions)

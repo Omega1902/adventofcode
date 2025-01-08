@@ -6,18 +6,6 @@ from itertools import combinations
 from typing import Any
 
 from tqdm import tqdm
-from utils import get_data
-
-test_data = """Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
-Valve BB has flow rate=13; tunnels lead to valves CC, AA
-Valve CC has flow rate=2; tunnels lead to valves DD, BB
-Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
-Valve EE has flow rate=3; tunnels lead to valves FF, DD
-Valve FF has flow rate=0; tunnels lead to valves EE, GG
-Valve GG has flow rate=0; tunnels lead to valves FF, HH
-Valve HH has flow rate=22; tunnel leads to valve GG
-Valve II has flow rate=0; tunnels lead to valves AA, JJ
-Valve JJ has flow rate=21; tunnel leads to valve II"""
 
 
 def timeit(func):
@@ -265,11 +253,11 @@ def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
     return max(tqdm(gen_future2(cave, None, None, "AA", "AA", 26), total=(open_valves * (open_valves - 1)) // 2))  # type: ignore
 
 
-test_cave = parse_data(test_data)
-cave = parse_data(get_data("input_day16.txt"))
+def challenge1(data: str) -> int:
+    cave = parse_data(data)
+    return get_most_pressure_released(cave)
 
-assert get_most_pressure_released(test_cave) == 1651
-print(get_most_pressure_released(cave))  # takes a couple of minutes
 
-assert get_most_pressure_released2(test_cave) == 1707
-print(get_most_pressure_released2(cave))  # takes to long to compute
+def challenge2_takes_to_long(data: str) -> int:
+    cave = parse_data(data)
+    return get_most_pressure_released2(cave)  # takes to long to compute

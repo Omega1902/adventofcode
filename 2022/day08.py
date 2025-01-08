@@ -1,11 +1,3 @@
-from utils import get_lines
-
-lines = get_lines("input_day8.txt")
-
-my_map = [[int(char) for char in line] for line in lines]
-# pprint(my_map)
-
-
 def calc_visible(my_map):
     counter = len(my_map[0]) + len(my_map[-1]) + 2 * len(my_map) - 4
     for i, row in enumerate(my_map[1:-1], 1):
@@ -43,5 +35,11 @@ def calc_scenic_score(my_map):
     return highscore
 
 
-print(calc_visible(my_map))
-print(calc_scenic_score(my_map))
+def challenge1(data: str) -> int:
+    my_map = [[int(char) for char in line] for line in data.splitlines()]
+    return calc_visible(my_map)
+
+
+def challenge2(data: str) -> int:
+    my_map = [[int(char) for char in line] for line in data.splitlines()]
+    return calc_scenic_score(my_map)

@@ -2,11 +2,6 @@ from collections.abc import Collection, Iterable
 from functools import reduce
 from itertools import tee
 
-from utils import get_data
-
-test_data = """498,4 -> 498,6 -> 496,6
-503,4 -> 502,4 -> 502,9 -> 494,9"""
-
 Coord = tuple[int, int]
 StonePath = tuple[Coord, ...]
 
@@ -56,13 +51,11 @@ class Canvas:
     def __init__(self, paths: Collection[StonePath], floor=False):
         self.x_min = find_smallest_x(paths)
         self.x_max = find_highest_x(paths) + 1
-        print(f"X axis from {self.x_min} to {self.x_max}")
         self.y_min = min(find_smallest_y(paths), 0)
         self.y_max = find_highest_y(paths)
         self.floor = self.y_max + 2 if floor else False
         if self.floor:
             self.y_max += 2
-        print(f"Y axis from {self.y_min} to {self.y_max}")
         self.sand_counter = 0
         self.sand = (500, 0)
         self.canvas = reduce(
@@ -73,7 +66,6 @@ class Canvas:
         self.draw_floor()
 
     def draw_point(self, point: Coord, char: str):
-        # print(f"Draw {char} on {point}")
         self.canvas[point[1] - self.y_min][point[0] - self.x_min] = char
 
     def draw_line(self, point_start: Coord, point_stop: Coord, char: str):
@@ -90,7 +82,6 @@ class Canvas:
 
     def draw_path(self, paths: StonePath):
         for point1, point2 in pairwise(paths):
-            # print(f"Draw {point1} to {point2}")
             self.draw_line(point1, point2, "#")
 
     def draw_paths(self, paths: Collection[StonePath]):
@@ -158,22 +149,20 @@ class Canvas:
 def task1(paths):
     canvas = Canvas(paths)
     canvas.draw_sand_complete()
-    print(canvas)
     return canvas.sand_counter
 
 
 def task2(paths):
     canvas = Canvas(paths, True)
     canvas.draw_sand_complete()
-    # print(canvas)
     return canvas.sand_counter
 
 
-test_paths = parse_data(test_data)
-paths = parse_data(get_data("input_day14.txt"))
+def challenge1(data: str) -> int:
+    paths = parse_data(data)
+    return task1(paths)
 
-assert task1(test_paths) == 24
-print(task1(paths))
 
-assert task2(test_paths) == 93
-print(task2(paths))
+def challenge2(data: str) -> int:
+    paths = parse_data(data)
+    return task2(paths)

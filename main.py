@@ -4,7 +4,7 @@ import importlib
 from pathlib import Path
 from typing import Literal
 
-SUPPORTED_YEARS = (2024,)
+SUPPORTED_YEARS = (2022, 2024)
 
 
 def get_abs_path(filename: str) -> Path:
@@ -26,7 +26,7 @@ def run_day(year: int, day: int) -> None:
         print(f"Day {day} not implemented yet")
         return
     try:
-        data = get_data(f"data/{year}/input_day{day:02d}.txt")
+        data = get_data(f"data/{year}/day{day:02d}.txt")
     except FileNotFoundError:
         print(f"Day {day} input file not found")
         return

@@ -2,24 +2,6 @@ import contextlib
 import re
 from typing import Any
 
-from utils import get_data
-
-test_data = """root: pppw + sjmn
-dbpl: 5
-cczh: sllz + lgvd
-zczc: 2
-ptdq: humn - dvpt
-dvpt: 3
-lfqf: 4
-humn: 5
-ljgn: 2
-sjmn: drzm * dbpl
-sllz: 4
-pppw: cczh / lfqf
-lgvd: ljgn * ptdq
-drzm: hmdt - zczc
-hmdt: 32"""
-
 
 class MonkeyYell:
     def __init__(self, name: str, number: int) -> None:
@@ -98,7 +80,7 @@ class MonkeyMath:
         return monkeys[self.monkey2].to_yell(monkeys, expected)
 
 
-Monkey = [MonkeyMath, MonkeyYell]
+Monkey = MonkeyMath | MonkeyYell
 
 
 def parse_data(data: str) -> dict[str, Monkey]:
@@ -126,11 +108,11 @@ def get_humn_number(monkeys: dict[str, Monkey]) -> float:
     return root.to_yell(monkeys)
 
 
-monkeys_test = parse_data(test_data)
-monkeys = parse_data(get_data("input_day21.txt"))
+def challenge1(data: str) -> int:
+    monkeys = parse_data(data)
+    return int(get_root_number(monkeys))
 
-assert get_root_number(monkeys_test) == 152
-print(get_root_number(monkeys))
 
-assert get_humn_number(monkeys_test) == 301
-print(get_humn_number(monkeys))
+def challenge2(data: str) -> int:
+    monkeys = parse_data(data)
+    return int(get_humn_number(monkeys))
