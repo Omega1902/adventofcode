@@ -51,14 +51,14 @@ class Valve:
         self.my_map = my_map
 
     @classmethod
-    def from_string(cls, description: str):
+    def from_string(cls, description: str) -> "Valve":
         description = description.removeprefix("Valve ")
         name, description = description.split(" has flow rate=")
         flow_rate, desription = description.split("; tunnel")
         tunnel_names = desription.removeprefix("s lead to valves ").removeprefix(" leads to valve ")
-        return cls(name, int(flow_rate), list(tunnel_names.split(", ")))
+        return cls(name, int(flow_rate), tuple(tunnel_names.split(", ")))
 
-    def open_valve(self, minutes: Optional[int] = None) -> int:
+    def open_valve(self, minutes: Optional[int] = None) -> Optional[int]:
         """If minutes if given, returns the amount of pressure released during that time"""
         if self.open:
             return None if minutes is None else 0
@@ -96,7 +96,7 @@ class Valve:
         self.my_map = {valve.name: value for valve, value in my_map.items()}
 
 
-def parse_data(data: str) -> tuple[Valve]:
+def parse_data(data: str) -> dict[str, Valve]:
     valves = tuple(map(Valve.from_string, data.splitlines()))
     cave = {valve.name: valve for valve in valves}
     for valve in valves:
@@ -124,7 +124,7 @@ def gen_future(cave: dict[str, Valve], current_valve_name: str, minutes: int) ->
 
 
 def _get_most_pressure_released(cave: dict[str, Valve], current_valve_name: str, next_valve: str, minutes: int) -> int:
-    travel_and_work_time = cave[current_valve_name].my_map[next_valve] + 1
+    travel_and_work_time = cave[current_valve_name].my_map[next_valve] + 1  # type: ignore
     travel_and_work_time = min(travel_and_work_time, minutes)
     minutes -= travel_and_work_time
     # open_valves = tuple(get_valves_to_open(cave.values()))
@@ -134,7 +134,7 @@ def _get_most_pressure_released(cave: dict[str, Valve], current_valve_name: str,
     # )
     if minutes == 0:
         return 0
-    released_pressure = cave[next_valve].open_valve(minutes)
+    released_pressure: int = cave[next_valve].open_valve(minutes)  # type: ignore
     # future are all future possible solutions. Might be empty (if get_valves_to_open returns no elements)
     future = gen_future(cave, next_valve, minutes)
     return max(future, default=0) + released_pressure
@@ -152,13 +152,13 @@ def my_permutations(
 ) -> Iterable[tuple[Valve, Valve]]:
     for target_valve1, target_valve2 in combinations(open_valves, 2):
         if (
-            cave[valve_name1].my_map[target_valve1.name] <= cave[valve_name2].my_map[target_valve1.name]
-            and cave[valve_name2].my_map[target_valve2.name] <= cave[valve_name1].my_map[target_valve2.name]
+            cave[valve_name1].my_map[target_valve1.name] <= cave[valve_name2].my_map[target_valve1.name]  # type: ignore
+            and cave[valve_name2].my_map[target_valve2.name] <= cave[valve_name1].my_map[target_valve2.name]  # type: ignore
         ):
             yield target_valve1, target_valve2
         elif (
-            cave[valve_name2].my_map[target_valve1.name] <= cave[valve_name1].my_map[target_valve1.name]
-            and cave[valve_name1].my_map[target_valve2.name] <= cave[valve_name2].my_map[target_valve2.name]
+            cave[valve_name2].my_map[target_valve1.name] <= cave[valve_name1].my_map[target_valve1.name]  # type: ignore
+            and cave[valve_name1].my_map[target_valve2.name] <= cave[valve_name2].my_map[target_valve2.name]  # type: ignore
         ):
             yield target_valve2, target_valve1
         else:
@@ -211,8 +211,8 @@ def gen_future2(  # noqa: PLR0913
     raise ValueError  # should not be called without one workers opened a valve
 
 
-def find_in_between_step(cave: dict[str, Valve], next_valve: str, open_steps: int) -> str:
-    for valve, steps in cave[next_valve].my_map.items():
+def find_in_between_step(cave: dict[str, Valve], next_valve: str, open_steps: int) -> Optional[str]:
+    for valve, steps in cave[next_valve].my_map.items():  # type: ignore
         if steps == open_steps:
             return valve
     return None
@@ -237,17 +237,17 @@ def _get_most_pressure_released2(  # noqa: PLR0913
     next_valve2: str,
     minutes: int,
 ) -> int:
-    travel_and_work_time1 = cave[current_valve1].my_map[next_valve1] + 1
-    travel_and_work_time2 = cave[current_valve2].my_map[next_valve2] + 1
+    travel_and_work_time1 = cave[current_valve1].my_map[next_valve1] + 1  # type: ignore
+    travel_and_work_time2 = cave[current_valve2].my_map[next_valve2] + 1  # type: ignore
     travel_and_work_time = min(travel_and_work_time1, travel_and_work_time2, minutes)
     minutes -= travel_and_work_time
     if minutes == 0:
         return 0
 
     process_time_passed = partial(get_current_valve_name, cave, minutes, travel_and_work_time)
-    current_valve1, released_pressure_temp1 = process_time_passed(travel_and_work_time1, next_valve1)
-    current_valve2, released_pressure_temp2 = process_time_passed(travel_and_work_time2, next_valve2)
-    released_pressure = released_pressure_temp1 + released_pressure_temp2
+    current_valve1, released_pressure_temp1 = process_time_passed(travel_and_work_time1, next_valve1)  # type: ignore
+    current_valve2, released_pressure_temp2 = process_time_passed(travel_and_work_time2, next_valve2)  # type: ignore
+    released_pressure = released_pressure_temp1 + released_pressure_temp2  # type: ignore
     # open_valves = tuple(get_valves_to_open(cave.values()))
     # print(
     #     f"{minutes} m left, goto Valve {next_valve1}, elephant goes to Valve {next_valve2}, released "
@@ -261,7 +261,7 @@ def _get_most_pressure_released2(  # noqa: PLR0913
 def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
     open_valves = len(tuple(get_valves_to_open(cave.values())))
     print("Valves that should be open:", open_valves)
-    return max(tqdm(gen_future2(cave, None, None, "AA", "AA", 26), total=(open_valves * (open_valves - 1)) // 2))
+    return max(tqdm(gen_future2(cave, None, None, "AA", "AA", 26), total=(open_valves * (open_valves - 1)) // 2))  # type: ignore
 
 
 test_cave = parse_data(test_data)

@@ -12,7 +12,7 @@ StonePath = tuple[Coord, ...]
 
 
 def convert_to_coord(coord: str) -> Coord:
-    return tuple(map(int, coord.split(",")))
+    return tuple(map(int, coord.split(",")))  # type: ignore
 
 
 def parse_line(line: str) -> StonePath:
