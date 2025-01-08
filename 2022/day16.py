@@ -13,7 +13,8 @@ def timeit(func):
         start = time.perf_counter_ns()
         result = func(*args, **kwargs)
         stop = time.perf_counter_ns()
-        print(f"Process time {(stop-start)/1_000_000_000:.2f} s")
+        if stop - start > 1_000_000_000:
+            print(f"Process time {(stop-start)/1_000_000_000:.2f} s")
         return result
 
     return inner
@@ -132,8 +133,8 @@ def _get_most_pressure_released(cave: dict[str, Valve], current_valve_name: str,
 @timeit
 def get_most_pressure_released(cave: dict[str, Valve]) -> int:
     open_valves = len(tuple(get_valves_to_open(cave.values())))
-    print("Valves that should be open:", open_valves)
-    return max(tqdm(gen_future(cave, "AA", 30), total=open_valves))
+    # print("Valves that should be open:", open_valves)
+    return max(tqdm(gen_future(cave, "AA", 30), total=open_valves, delay=0.1))
 
 
 def my_permutations(
@@ -249,8 +250,14 @@ def _get_most_pressure_released2(  # noqa: PLR0913
 @timeit
 def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
     open_valves = len(tuple(get_valves_to_open(cave.values())))
-    print("Valves that should be open:", open_valves)
-    return max(tqdm(gen_future2(cave, None, None, "AA", "AA", 26), total=(open_valves * (open_valves - 1)) // 2))  # type: ignore
+    # print("Valves that should be open:", open_valves)
+    return max(
+        tqdm(
+            gen_future2(cave, None, None, "AA", "AA", 26),  # type: ignore
+            total=(open_valves * (open_valves - 1)) // 2,
+            delay=0.1,
+        )
+    )
 
 
 def challenge1(data: str) -> int:
