@@ -1,5 +1,3 @@
-from typing import Union
-
 from utils import get_lines
 
 
@@ -69,7 +67,7 @@ class Scissors:
         return Rock()
 
 
-def rock_paper_scissors_factory(item: str) -> Union[Rock, Paper, Scissors]:
+def rock_paper_scissors_factory(item: str) -> Rock | Paper | Scissors:
     if item in {"A", "X"}:
         return Rock()
     if item in {"B", "Y"}:

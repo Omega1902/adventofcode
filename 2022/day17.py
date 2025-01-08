@@ -23,10 +23,15 @@ _ROCKS = """####
 
 
 ROCKS: Final[tuple[list[list[str]], ...]] = tuple(
-    ([list(rock_line) for rock_line in rocks] for rocks in (rocks.splitlines() for rocks in _ROCKS))
+    [list(rock_line) for rock_line in rocks] for rocks in (rocks.splitlines() for rocks in _ROCKS)
 )
 
-Coord = NamedTuple("Coord", [("x", int), ("y", int)])
+
+class Coord(NamedTuple):
+    x: int
+    y: int
+
+
 Movement = Literal["<", ">"]
 
 

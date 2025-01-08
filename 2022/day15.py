@@ -1,6 +1,5 @@
 import re
 from collections.abc import Collection
-from typing import Optional
 
 from tqdm import trange
 from utils import get_data
@@ -58,7 +57,7 @@ class Sensor(GridItem):
     def range_to_grid_item(self, other: GridItem):
         return self._range_to_coords(other.x, other.y)
 
-    def range_on_row(self, x: int) -> Optional[tuple[int, int]]:
+    def range_on_row(self, x: int) -> tuple[int, int] | None:
         radius_on_row = self.range_to_next_beacon - self._range_to_coords(x, self.y)
         if radius_on_row < 0:
             return None
@@ -129,7 +128,7 @@ class Grid:
 
     def find_distress_beacon(
         self, x: int, sensors: Collection[Sensor], range_min: int, range_max: int
-    ) -> Optional[tuple[int, int]]:
+    ) -> tuple[int, int] | None:
         ranges = [sensor_range for sensor in sensors if (sensor_range := sensor.range_on_row(x)) is not None]
         ranges.sort()
         index = range_min

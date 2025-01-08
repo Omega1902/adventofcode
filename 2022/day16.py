@@ -1,8 +1,9 @@
 import contextlib
 import time
+from collections.abc import Iterable
 from functools import partial
 from itertools import combinations
-from typing import Any, Iterable, Optional
+from typing import Any
 
 from tqdm import tqdm
 from utils import get_data
@@ -42,7 +43,7 @@ class Valve:
         flow_rate: int,
         tunnel_names: tuple[str, ...],
         opened: bool = False,
-        my_map: Optional[dict] = None,
+        my_map: dict | None = None,
     ):
         self.name = name
         self.flow_rate = flow_rate
@@ -58,7 +59,7 @@ class Valve:
         tunnel_names = desription.removeprefix("s lead to valves ").removeprefix(" leads to valve ")
         return cls(name, int(flow_rate), tuple(tunnel_names.split(", ")))
 
-    def open_valve(self, minutes: Optional[int] = None) -> Optional[int]:
+    def open_valve(self, minutes: int | None = None) -> int | None:
         """If minutes if given, returns the amount of pressure released during that time"""
         if self.open:
             return None if minutes is None else 0
@@ -211,7 +212,7 @@ def gen_future2(  # noqa: PLR0913
     raise ValueError  # should not be called without one workers opened a valve
 
 
-def find_in_between_step(cave: dict[str, Valve], next_valve: str, open_steps: int) -> Optional[str]:
+def find_in_between_step(cave: dict[str, Valve], next_valve: str, open_steps: int) -> str | None:
     for valve, steps in cave[next_valve].my_map.items():  # type: ignore
         if steps == open_steps:
             return valve

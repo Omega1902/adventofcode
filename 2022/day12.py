@@ -1,6 +1,5 @@
 from collections.abc import Iterable
 from functools import partial
-from typing import Optional
 
 from utils import get_data
 
@@ -42,7 +41,7 @@ weights = {
 }
 
 
-def parse_row(row: str) -> tuple[Optional[int], Optional[int], list[int]]:
+def parse_row(row: str) -> tuple[int | None, int | None, list[int]]:
     result = []
     start = None
     stop = None

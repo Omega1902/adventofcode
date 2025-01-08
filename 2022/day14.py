@@ -43,7 +43,7 @@ def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
     next(b, None)
-    return zip(a, b)
+    return zip(a, b, strict=False)
 
 
 downward = lambda point: (point[0], point[1] + 1)
@@ -103,7 +103,7 @@ class Canvas:
             self.draw_point((x, self.floor), "#")
 
     def __str__(self):
-        return "\n".join(("".join(line) for line in self.canvas))
+        return "\n".join("".join(line) for line in self.canvas)
 
     def add_column_left(self):
         for row in self.canvas:

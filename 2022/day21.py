@@ -1,6 +1,6 @@
 import contextlib
 import re
-from typing import Any, Optional, Union
+from typing import Any
 
 from utils import get_data
 
@@ -26,7 +26,7 @@ class MonkeyYell:
         self.name = name
         self.number = number
 
-    def yell(self, *args) -> int:
+    def yell(self, *args) -> int:  # noqa: ARG002
         return self.number
 
     def yell2(self, *args) -> int:
@@ -64,7 +64,7 @@ class MonkeyMath:
     def yell2(self, monkeys: dict[str, Any]) -> float:
         return self.calc(monkeys[self.monkey1].yell2(monkeys), monkeys[self.monkey2].yell2(monkeys))
 
-    def to_yell(self, monkeys: dict[str, Any], expected: Optional[float] = None) -> float:
+    def to_yell(self, monkeys: dict[str, Any], expected: float | None = None) -> float:
         result1 = None
         result2 = None
         with contextlib.suppress(ValueError):
@@ -98,7 +98,7 @@ class MonkeyMath:
         return monkeys[self.monkey2].to_yell(monkeys, expected)
 
 
-Monkey = Union[MonkeyMath, MonkeyYell]
+Monkey = [MonkeyMath, MonkeyYell]
 
 
 def parse_data(data: str) -> dict[str, Monkey]:

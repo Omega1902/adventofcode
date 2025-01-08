@@ -1,4 +1,4 @@
-from typing import Callable, Iterable, Optional
+from collections.abc import Callable, Iterable
 
 from utils import get_data
 
@@ -34,7 +34,7 @@ def is_lava(cube: Cube, cubes: set[Cube]) -> bool:
     return cube in cubes
 
 
-def is_not_lava(cube: Cube, cubes: set[Cube], *args) -> bool:
+def is_not_lava(cube: Cube, cubes: set[Cube], *args) -> bool:  # noqa: ARG001
     return not is_lava(cube, cubes)
 
 
@@ -50,7 +50,7 @@ def is_in_dim(cube: Cube, dims: Dims) -> bool:
     )
 
 
-def is_air(cube: Cube, cubes: set[Cube], dims, air_bubble: Optional[set[Cube]] = None) -> bool:
+def is_air(cube: Cube, cubes: set[Cube], dims, air_bubble: set[Cube] | None = None) -> bool:
     if cube in air:
         return True
     is_root = False
