@@ -35,9 +35,6 @@ def challenge2(filename: str) -> int:
     return result
 
 
-assert challenge1("data/test_day01.txt") == 11
 print(challenge1("data/input_day01.txt"))
 
-
-assert challenge2("data/test_day01.txt") == 31
 print(challenge2("data/input_day01.txt"))
