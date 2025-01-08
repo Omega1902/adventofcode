@@ -69,7 +69,7 @@ def challenge2(filename: str) -> int:
     return sum(1 for level in levels if level_is_safe2(level))
 
 
-print(challenge1("data/input_day02.txt"))
+if __name__ == "__main__":
+    print(challenge1("data/input_day02.txt"))
 
-
-print(challenge2("data/input_day02.txt"))
+    print(challenge2("data/input_day02.txt"))
