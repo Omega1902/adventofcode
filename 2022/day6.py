@@ -24,7 +24,7 @@ def get_index(data: str) -> int:
         buffer = buffer[1:]
         if all_unique(buffer):
             return i
-    raise ValueError()
+    raise ValueError
 
 
 def get_index2(data: str) -> int:
@@ -34,7 +34,7 @@ def get_index2(data: str) -> int:
         buffer = buffer[1:]
         if all_unique(buffer):
             return i
-    raise ValueError()
+    raise ValueError
 
 
 print(get_index(test1))

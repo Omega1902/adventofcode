@@ -125,7 +125,7 @@ class Canvas:
                 self.add_column_left()
         elif point[0] > self.x_max or point[0] < self.x_min or point[1] > self.y_max:
             # point[1] < self.y_min not necessary
-            raise ValueError()
+            raise ValueError
         return self.canvas[point[1] - self.y_min][point[0] - self.x_min] == "."
 
     def find_next_sand_point(self):
@@ -172,8 +172,8 @@ def task2(paths):
 test_paths = parse_data(test_data)
 paths = parse_data(get_data("input_day14.txt"))
 
-assert task1(test_paths) == 24
+assert task1(test_paths) == 24  # noqa: PLR2004
 print(task1(paths))
 
-assert task2(test_paths) == 93
+assert task2(test_paths) == 93  # noqa: PLR2004
 print(task2(paths))

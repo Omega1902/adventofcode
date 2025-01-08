@@ -38,8 +38,7 @@ def calc_scenic_score(my_map):
                 * _calc_scenic_score(top, value)
                 * _calc_scenic_score(bottom, value)
             )
-            if score > highscore:
-                highscore = score
+            highscore = max(score, highscore)
 
     return highscore
 

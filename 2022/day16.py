@@ -1,7 +1,8 @@
+import contextlib
 import time
 from functools import partial
 from itertools import combinations
-from typing import Any, Iterable
+from typing import Any, Iterable, Optional
 
 from tqdm import tqdm
 from utils import get_data
@@ -30,15 +31,18 @@ def timeit(func):
 
 
 def remove_save_from_list(my_list: list, value: Any):
-    try:
+    with contextlib.suppress(ValueError):
         my_list.remove(value)
-    except ValueError:
-        pass
 
 
 class Valve:
     def __init__(
-        self, name: str, flow_rate: int, tunnel_names: tuple[str, ...], opened: bool = False, my_map: dict = None
+        self,
+        name: str,
+        flow_rate: int,
+        tunnel_names: tuple[str, ...],
+        opened: bool = False,
+        my_map: Optional[dict] = None,
     ):
         self.name = name
         self.flow_rate = flow_rate
@@ -54,7 +58,7 @@ class Valve:
         tunnel_names = desription.removeprefix("s lead to valves ").removeprefix(" leads to valve ")
         return cls(name, int(flow_rate), list(tunnel_names.split(", ")))
 
-    def open_valve(self, minutes: int = None) -> int:
+    def open_valve(self, minutes: Optional[int] = None) -> int:
         """If minutes if given, returns the amount of pressure released during that time"""
         if self.open:
             return None if minutes is None else 0
@@ -87,7 +91,7 @@ class Valve:
                 remove_save_from_list(target, tunnel)
                 my_map[tunnel] = counter
             if not next_tunnels:
-                raise ValueError()
+                raise ValueError
             counter += 1
         self.my_map = {valve.name: value for valve, value in my_map.items()}
 
@@ -162,7 +166,7 @@ def my_permutations(
             yield target_valve2, target_valve1
 
 
-def gen_future2(
+def gen_future2(  # noqa: PLR0913
     cave: dict[str, Valve],
     current_valve1: str,
     current_valve2: str,
@@ -180,13 +184,13 @@ def gen_future2(
             for next_target in open_valves
             if next_target.name != next_valve2 or len(open_valves) == 1
         )
-    elif worker2 and not worker1:
+    if worker2 and not worker1:
         return (
             my_pressure_released(copy_cave(cave), current_valve1, next_valve2, next_valve1, next_target.name)
             for next_target in open_valves
             if next_target.name != next_valve1 or len(open_valves) == 1
         )
-    elif worker1 and worker2:
+    if worker1 and worker2:
         if len(open_valves) <= 1:
             # only one valve left, just send both for that one
             # or nothing to do
@@ -204,13 +208,14 @@ def gen_future2(
             my_pressure_released(copy_cave(cave), next_valve1, next_valve2, new_valve1.name, new_valve2.name)
             for new_valve1, new_valve2 in select_valves(open_valves)
         )
-    raise ValueError()  # should not be called without one workers opened a valve
+    raise ValueError  # should not be called without one workers opened a valve
 
 
 def find_in_between_step(cave: dict[str, Valve], next_valve: str, open_steps: int) -> str:
     for valve, steps in cave[next_valve].my_map.items():
         if steps == open_steps:
             return valve
+    return None
 
 
 def get_current_valve_name(
@@ -224,7 +229,7 @@ def get_current_valve_name(
     return find_in_between_step(cave, target_valve_name, time_required - time_passed - 1), 0
 
 
-def _get_most_pressure_released2(
+def _get_most_pressure_released2(  # noqa: PLR0913
     cave: dict[str, Valve],
     current_valve1: str,
     current_valve2: str,
@@ -262,8 +267,8 @@ def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
 test_cave = parse_data(test_data)
 cave = parse_data(get_data("input_day16.txt"))
 
-assert get_most_pressure_released(test_cave) == 1651
+assert get_most_pressure_released(test_cave) == 1651  # noqa: PLR2004
 print(get_most_pressure_released(cave))  # takes a couple of minutes
 
-assert get_most_pressure_released2(test_cave) == 1707
+assert get_most_pressure_released2(test_cave) == 1707  # noqa: PLR2004
 print(get_most_pressure_released2(cave))  # takes to long to compute

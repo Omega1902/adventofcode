@@ -12,7 +12,7 @@ def move(direction: str, current_position: tuple[int, int]) -> tuple[int, int]:
         return (current_position[0], current_position[1] + 1)
     if direction == "D":
         return (current_position[0], current_position[1] - 1)
-    raise ValueError()
+    raise ValueError
 
 
 def tail_need_to_move(head: tuple[int, int], tail: tuple[int, int]) -> bool:

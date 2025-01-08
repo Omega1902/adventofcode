@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Callable
+from typing import Callable, ClassVar
 
 from tqdm import tqdm, trange
 
@@ -89,7 +89,7 @@ Monkey 3:
 
 
 class Monkey:
-    monkeys = []
+    monkeys: ClassVar[list["Monkey"]] = []
     _kgv = None
 
     def __init__(
@@ -105,11 +105,11 @@ class Monkey:
 
     def turn(self):
         for item in self.items:
-            item = self.operation(item)
-            # item = item // 3
-            item = item % self.get_kgv()
-            index = self.monkey_true if item % self.test_param == 0 else self.monkey_false
-            Monkey.monkeys[index].items.append(item)
+            cur_item = self.operation(item)
+            # cur_item = cur_item // 3
+            cur_item = cur_item % self.get_kgv()
+            index = self.monkey_true if cur_item % self.test_param == 0 else self.monkey_false
+            Monkey.monkeys[index].items.append(cur_item)
         self.items_inspected += len(self.items)
         self.items = []
 
@@ -139,7 +139,7 @@ class Monkey:
                     except ValueError:
                         operation = lambda x: x * x
                 else:
-                    raise ValueError()
+                    raise ValueError
             elif line.startswith("  Test: divisible by "):
                 test_param = int(line.removeprefix("  Test: divisible by "))
             elif line.startswith("    If true: throw to monkey "):

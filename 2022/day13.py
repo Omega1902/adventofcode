@@ -105,7 +105,7 @@ def compare_pairs(pairs: Iterable[tuple[list, ...]]) -> int:
 test_pairs = tuple(parse_data(test_data))
 pairs = tuple(parse_data(get_data("input_day13.txt")))
 
-assert compare_pairs(test_pairs) == 13
+assert compare_pairs(test_pairs) == 13  # noqa: PLR2004
 print(compare_pairs(pairs))
 
 
@@ -121,12 +121,12 @@ def find_divider_packets(package: list) -> bool:
 
 
 def decoder_key(pairs: tuple[tuple[list, ...]]) -> int:
-    pairs = pairs + (([[2]], [[6]]),)
+    pairs = (*pairs, ([[2]], [[6]]))
     packages = sort_packages(pairs)
     # pprint(packages)
     indexes = (i for i, package in enumerate(packages, 1) if find_divider_packets(package))
     return reduce(lambda x, y: x * y, indexes)
 
 
-assert decoder_key(test_pairs) == 140
+assert decoder_key(test_pairs) == 140  # noqa: PLR2004
 print(decoder_key(pairs))  # 11106053088 to high, 0 is not the right answer

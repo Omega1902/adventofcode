@@ -31,13 +31,13 @@ for line in lines:
     elf1_stop = int(elf1_stop)
     elf2_start = int(elf2_start)
     elf2_stop = int(elf2_stop)
-    if contained(elf1_start, elf1_stop, elf2_start, elf2_stop):
+    if contained(elf1_start, elf1_stop, elf2_start, elf2_stop) or contained(
+        elf2_start, elf2_stop, elf1_start, elf1_stop
+    ):
         contained_sum += 1
-    elif contained(elf2_start, elf2_stop, elf1_start, elf1_stop):
-        contained_sum += 1
-    if overlapps(elf1_start, elf1_stop, elf2_start, elf2_stop):
-        overlapps_sum += 1
-    elif overlapps(elf2_start, elf2_stop, elf1_start, elf1_stop):
+    if overlapps(elf1_start, elf1_stop, elf2_start, elf2_stop) or overlapps(
+        elf2_start, elf2_stop, elf1_start, elf1_stop
+    ):
         overlapps_sum += 1
 print(contained_sum)
 print(overlapps_sum)  # 958 is to high
