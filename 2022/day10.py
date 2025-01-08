@@ -32,7 +32,7 @@ def challenge2(data: str) -> str:
     for signal in signals[1:]:
         if CRC == 0:
             screen_index += 1
-        if CRC in (signal, signal + 1, signal - 1):
+        if CRC in {signal, signal + 1, signal - 1}:
             result_screen[screen_index] += bright
         else:
             result_screen[screen_index] += low

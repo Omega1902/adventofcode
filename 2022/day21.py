@@ -1,4 +1,5 @@
 import contextlib
+import operator
 import re
 from typing import Any
 
@@ -64,13 +65,13 @@ class MonkeyMath:
         elif self.operation == "*":
             operation = lambda other, expected: expected / other
         elif self.operation == "-" and result1 is None:
-            operation = lambda res2, expected: res2 + expected
+            operation = operator.add
         elif self.operation == "-" and result2 is None:
-            operation = lambda res1, expected: res1 - expected
+            operation = operator.sub
         elif self.operation == "/" and result1 is None:
-            operation = lambda res2, expected: res2 * expected
+            operation = operator.mul
         elif self.operation == "/" and result2 is None:
-            operation = lambda res1, expected: res1 / expected
+            operation = operator.truediv
         else:
             raise ValueError(f"Operation {self.operation} does not exist")
         if result1 is None:

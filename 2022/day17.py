@@ -2,23 +2,7 @@ from typing import Final, Literal, NamedTuple
 
 import tqdm
 
-_ROCKS = """####
-
-.#.
-###
-.#.
-
-..#
-..#
-###
-
-#
-#
-#
-#
-
-##
-##""".split("\n\n")
+_ROCKS = ["####", ".#.\n###\n.#.", "..#\n..#\n###", "#\n#\n#\n#", "##\n##"]
 
 
 ROCKS: Final[tuple[list[list[str]], ...]] = tuple(

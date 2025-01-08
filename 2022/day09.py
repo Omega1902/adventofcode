@@ -17,10 +17,10 @@ def tail_need_to_move(head: tuple[int, int], tail: tuple[int, int]) -> bool:
 def tail_new_position(head: tuple[int, int], tail: tuple[int, int]) -> tuple[int, int]:
     x = head[0] - tail[0]
     if x != 0:
-        x = x // abs(x)
+        x //= abs(x)
     y = head[1] - tail[1]
     if y != 0:
-        y = y // abs(y)
+        y //= abs(y)
     return (tail[0] + x, tail[1] + y)
 
 
