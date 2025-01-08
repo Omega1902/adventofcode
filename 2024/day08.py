@@ -1,17 +1,9 @@
 from itertools import combinations
-from typing import NamedTuple
+
+from utils import GridTuple, Point, parse_to_grid_tuple_str
 
 
-class Point(NamedTuple):
-    x: int
-    y: int
-
-
-def parse_grid(data: str) -> tuple[tuple[str, ...], ...]:
-    return tuple(map(tuple, data.splitlines()))
-
-
-def get_antennas(grid: tuple[tuple[str, ...], ...]) -> set[str]:
+def get_antennas(grid: GridTuple[str]) -> set[str]:
     antennas = set()
     for row in grid:
         antennas.update(row)
@@ -19,7 +11,7 @@ def get_antennas(grid: tuple[tuple[str, ...], ...]) -> set[str]:
     return antennas
 
 
-def find_antenna_positions(grid: tuple[tuple[str, ...], ...], antenna: str) -> set[Point]:
+def find_antenna_positions(grid: GridTuple[str], antenna: str) -> set[Point]:
     antenna_positions = set()
     for y, row in enumerate(grid):
         for x, cell in enumerate(row):
@@ -28,7 +20,7 @@ def find_antenna_positions(grid: tuple[tuple[str, ...], ...], antenna: str) -> s
     return antenna_positions
 
 
-def _find_antinodes(grid: tuple[tuple[str, ...], ...], antenna: str, GRID_MAX_X: int, GRID_MAX_Y: int) -> set[Point]:
+def _find_antinodes(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_MAX_Y: int) -> set[Point]:
     antinodes = set()
 
     def add_antinode(x: int, y: int):
@@ -44,7 +36,7 @@ def _find_antinodes(grid: tuple[tuple[str, ...], ...], antenna: str, GRID_MAX_X:
     return antinodes
 
 
-def find_antinodes(grid: tuple[tuple[str, ...], ...], antennas: set[str]) -> set[Point]:
+def find_antinodes(grid: GridTuple[str], antennas: set[str]) -> set[Point]:
     antinodes = set()
     GRID_MAX_X = len(grid[0]) - 1
     GRID_MAX_Y = len(grid) - 1
@@ -53,7 +45,7 @@ def find_antinodes(grid: tuple[tuple[str, ...], ...], antennas: set[str]) -> set
     return antinodes
 
 
-def _find_antinodes2(grid: tuple[tuple[str, ...], ...], antenna: str, GRID_MAX_X: int, GRID_MAX_Y: int) -> set[Point]:
+def _find_antinodes2(grid: GridTuple[str], antenna: str, GRID_MAX_X: int, GRID_MAX_Y: int) -> set[Point]:
     antinodes = set()
 
     def in_bounds(x: int, y: int) -> bool:
@@ -81,7 +73,7 @@ def _find_antinodes2(grid: tuple[tuple[str, ...], ...], antenna: str, GRID_MAX_X
     return antinodes
 
 
-def find_antinodes2(grid: tuple[tuple[str, ...], ...], antennas: set[str]) -> set[Point]:
+def find_antinodes2(grid: GridTuple[str], antennas: set[str]) -> set[Point]:
     antinodes = set()
     GRID_MAX_X = len(grid[0]) - 1
     GRID_MAX_Y = len(grid) - 1
@@ -91,12 +83,12 @@ def find_antinodes2(grid: tuple[tuple[str, ...], ...], antennas: set[str]) -> se
 
 
 def challenge1(data: str) -> int:
-    grid = parse_grid(data)
+    grid = parse_to_grid_tuple_str(data)
     antennas = get_antennas(grid)
     return len(find_antinodes(grid, antennas))
 
 
 def challenge2(data: str) -> int:
-    grid = parse_grid(data)
+    grid = parse_to_grid_tuple_str(data)
     antennas = get_antennas(grid)
     return len(find_antinodes2(grid, antennas))

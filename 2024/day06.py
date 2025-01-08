@@ -1,16 +1,9 @@
-from typing import NamedTuple
-
 from tqdm import tqdm
 
-Map = list[list[str]]
+from utils import GridList, Point, parse_to_grid_list_str
 
 
-class Point(NamedTuple):
-    x: int
-    y: int
-
-
-def get_next_point(grid: Map, point: Point) -> Point:
+def get_next_point(grid: GridList[str], point: Point) -> Point:
     match grid[point.y][point.x]:
         case "^":
             return Point(point.x, point.y - 1)
@@ -24,7 +17,7 @@ def get_next_point(grid: Map, point: Point) -> Point:
             raise ValueError(f"Invalid point at {point}: " + grid[point.y][point.x])
 
 
-def turn_right(grid: Map, point: Point) -> None:
+def turn_right(grid: GridList[str], point: Point) -> None:
     match grid[point.y][point.x]:
         case "^":
             grid[point.y][point.x] = ">"
@@ -38,7 +31,7 @@ def turn_right(grid: Map, point: Point) -> None:
             raise ValueError(f"Invalid point at {point}: " + grid[point.y][point.x])
 
 
-def find_distinct_visits(grid: Map) -> int:
+def find_distinct_visits(grid: GridList[str]) -> int:
     guard = find_guard(grid)
     max_point = Point(len(grid[0]) - 1, len(grid) - 1)
     while guard.y > 0 and guard.x > 0 and guard.y < max_point.y and guard.x < max_point.x:
@@ -53,7 +46,7 @@ def find_distinct_visits(grid: Map) -> int:
     return sum(row.count("X") for row in grid)
 
 
-def find_guard(mal: Map) -> Point:
+def find_guard(mal: GridList[str]) -> Point:
     for y in range(len(mal)):
         for x, item in enumerate(mal[y]):
             if item in "^<>v":
@@ -61,7 +54,7 @@ def find_guard(mal: Map) -> Point:
     raise ValueError("No guard found")
 
 
-def loops(grid: Map, guard: Point, max_point: Point) -> bool:
+def loops(grid: GridList[str], guard: Point, max_point: Point) -> bool:
     visited: dict[Point, tuple[str, ...]] = {}
     visited[guard] = (grid[guard.y][guard.x],)
     while guard.y > 0 and guard.x > 0 and guard.y < max_point.y and guard.x < max_point.x:
@@ -94,10 +87,10 @@ def find_obstruction_places(grid) -> int:
 
 
 def challenge1(data: str) -> int:
-    grid = [list(line) for line in data.splitlines()]
+    grid = parse_to_grid_list_str(data)
     return find_distinct_visits(grid)
 
 
 def challenge2(data: str) -> int:
-    grid = [list(line) for line in data.splitlines()]
+    grid = parse_to_grid_list_str(data)
     return find_obstruction_places(grid)
