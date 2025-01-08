@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 tqdm = "==4.67.1"
+advent-of-code-data = "==2.0.4"
 
 [dev-packages]
 pre-commit = "==4.0.1"

@@ -268,8 +268,8 @@ def get_most_pressure_released2(cave: dict[str, Valve]) -> int:
 test_cave = parse_data(test_data)
 cave = parse_data(get_data("input_day16.txt"))
 
-assert get_most_pressure_released(test_cave) == 1651  # noqa: PLR2004
+assert get_most_pressure_released(test_cave) == 1651
 print(get_most_pressure_released(cave))  # takes a couple of minutes
 
-assert get_most_pressure_released2(test_cave) == 1707  # noqa: PLR2004
+assert get_most_pressure_released2(test_cave) == 1707
 print(get_most_pressure_released2(cave))  # takes to long to compute
